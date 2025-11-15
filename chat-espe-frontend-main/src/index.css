@@ -1,0 +1,282 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  margin-bottom: 30px;
+}
+
+input, select, button {
+  padding: 15px;
+  margin: 10px 0;
+  border: 2px solid #e1e5e9;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.flex {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+/* ====== CHAT MODERNO COMO WHATSAPP ====== */
+.chat-container {
+  height: 600px;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  background: #f0f2f5;
+  font-size: 15px;
+}
+
+.chat-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 20px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chat-header .room-id {
+  font-family: monospace;
+  background: rgba(255,255,255,0.2);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.chat-header .status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background: #e5ddd5;
+  background-image: 
+    repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.05) 35px, rgba(255,255,255,.05) 70px);
+}
+
+.message {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  max-width: 75%;
+  word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  position: relative;
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+
+.message.own {
+  background: #dcf8c6;
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+
+.message.other {
+  background: white;
+  border-bottom-left-radius: 4px;
+}
+
+.message .username {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #667eea;
+}
+
+.message .timestamp {
+  font-size: 11px;
+  color: #999;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.file-message {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.file-message .file-icon {
+  font-size: 32px;
+  margin-right: 12px;
+}
+
+.file-link {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  display: block;
+  margin-top: 6px;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+.user-list {
+  background: #f1f3f4;
+  padding: 10px 16px;
+  border-top: 1px solid #ddd;
+  font-size: 13px;
+  color: #555;
+}
+
+/* ====== BARRA DE ENTRADA ESTILO WHATSAPP ====== */
+.chat-input-container {
+  background: #f0f2f5;
+  padding: 12px 16px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  background: white;
+  font-size: 15px;
+  outline: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.chat-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.input-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.input-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.2s;
+}
+
+.send-btn {
+  background: #667eea;
+  color: white;
+}
+
+.send-btn:hover {
+  background: #5a6fd8;
+  transform: scale(1.05);
+}
+
+.attach-btn {
+  background: #e9ecef;
+  color: #555;
+}
+
+.attach-btn:hover {
+  background: #dee2e6;
+  transform: scale(1.05);
+}
+
+.attach-btn input {
+  display: none;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+  .flex {
+    flex-direction: column;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+
+  .chat-container {
+    height: 700vh;
+  }
+
+  .message {
+    max-width: 85%;
+  }
+}
