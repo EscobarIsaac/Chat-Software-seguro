@@ -1,3 +1,4 @@
+// src/components/ChatRoom.tsx (COMPLETO Y CORREGIDO)
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import socket from '../socket';
 import type { Message } from '../types';
@@ -49,14 +50,20 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname }) => {
       socket.off('joined');
       socket.disconnect();
     };
-  }, [roomId, pin, nickname, scrollToBottom]);
+  }, [roomId, pin, nickname]); // Dependencias originales (correctas)
 
-  useEffect(scrollToBottom, [scrollToBottom]);
+  // ARREGLO 2: El 'scroll' se ejecuta CADA VEZ que el array 'messages' cambia.
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
   const sendMessage = () => {
     if (!input.trim() || !connected) return;
+    
+    // ARREGLO 1: Añade 'username: nickname' al emitir
     socket.emit('message', {
       msg: input,
+      username: nickname, // <-- ¡ARREGLO AÑADIDO!
       timestamp: new Date().toISOString()
     });
     setInput('');
@@ -66,17 +73,19 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname }) => {
     const file = e.target.files?.[0];
     if (!file || !connected) return;
     
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024) { // Límite de 10MB
       alert('Archivo demasiado grande (máx 10MB)');
       return;
     }
 
     const reader = new FileReader();
     reader.onload = () => {
+      // ARREGLO 1: Añade 'username: nickname' al emitir
       socket.emit('file', {
         file: (reader.result as string).split(',')[1],
         filename: file.name,
         filetype: file.type,
+        username: nickname, // <-- ¡ARREGLO AÑADIDO!
         timestamp: new Date().toISOString()
       });
     };
@@ -103,6 +112,9 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname }) => {
           {messages.map((msg, i) => (
             <div
               key={i}
+              // ARREGLO 1 (Explicación): Ahora que envías el 'username',
+              // esta comparación 'msg.username === nickname' funcionará
+              // y tus mensajes se verán con la clase 'own'
               className={`message ${msg.username === nickname ? 'own' : 'other'}`}
             >
               <strong>{msg.username}</strong>
@@ -120,6 +132,8 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname }) => {
               )}
             </div>
           ))}
+          {/* ARREGLO 2 (Explicación): Este div es el marcador
+          al que el 'useEffect' hará scroll automáticamente */}
           <div ref={messagesEndRef} />
         </div>
 

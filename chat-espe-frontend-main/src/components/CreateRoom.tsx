@@ -1,16 +1,30 @@
 import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
-import type { RoomForm } from '../types';  // ← CORREGIDO: import type
+import type { RoomForm } from '../types'; // Importa el tipo
 
+// Define el tipo de objeto que App.tsx (el padre) espera
+type CreatedRoomInfo = {
+  id: string;
+  pin: string;
+};
+
+// Define las props que recibe este componente
 interface Props {
-  onRoomCreated: (roomId: string) => void;
+  onRoomCreated: (room: CreatedRoomInfo) => void;
 }
 
+// Función helper para obtener la URL del backend
+const getApiBase = () => {
+  return import.meta.env.MODE === 'production'
+    ? 'https://chat-espe-backend-production.up.railway.app'
+    : `http://${window.location.hostname}:5000`;
+};
+
 const CreateRoom: React.FC<Props> = ({ onRoomCreated }) => {
-  const [form, setForm] = useState<RoomForm>({
+  // El 'type' ya no es necesario aquí
+  const [form, setForm] = useState<Omit<RoomForm, 'type'>>({
     name: '',
     pin: '',
-    type: 'text'
   });
   const [loading, setLoading] = useState(false);
 
@@ -19,16 +33,20 @@ const CreateRoom: React.FC<Props> = ({ onRoomCreated }) => {
     setLoading(true);
     
     try {
-      const API_BASE = import.meta.env.MODE === 'production'
-        ? 'https://chat-espe-backend-production.up.railway.app'
-        : '';
-
-      const res = await axios.post(`${API_BASE}/api/admin/rooms`, form, {
+      const res = await axios.post(`${getApiBase()}/api/admin/rooms`, form, {
         withCredentials: true,
         timeout: 5000
       });
-      onRoomCreated(res.data.room_id);
-      setForm({ name: '', pin: '', type: 'text' });
+
+      // Creamos el objeto que App.tsx espera
+      const roomInfo = {
+        id: res.data.room_id, 
+        pin: res.data.pin     
+      };
+      
+      onRoomCreated(roomInfo); // <-- Envía el objeto completo
+
+      setForm({ name: '', pin: '' }); // Resetea el formulario
     } catch (err: unknown) {
       const error = err as AxiosError;
       alert('Error al crear sala');
@@ -40,7 +58,7 @@ const CreateRoom: React.FC<Props> = ({ onRoomCreated }) => {
 
   return (
     <div className="card" style={{ maxWidth: '400px' }}>
-      <h3 style={{ marginBottom: '20px', color: '#667eea' }}>
+      <h3 style={{ marginBottom: '20px', color: '#00c8a0' }}>
         Crear Nueva Sala
       </h3>
       <form onSubmit={handleSubmit}>
@@ -60,14 +78,9 @@ const CreateRoom: React.FC<Props> = ({ onRoomCreated }) => {
           required
           disabled={loading}
         />
-        <select
-          value={form.type}
-          onChange={e => setForm({ ...form, type: e.target.value as 'text' | 'multimedia' })}
-          disabled={loading}
-        >
-          <option value="text">Solo Texto</option>
-          <option value="multimedia">Multimedia (archivos)</option>
-        </select>
+        
+        {/* --- CAMPO <select> ELIMINADO --- */}
+        
         <button type="submit" disabled={loading}>
           {loading ? 'Creando...' : 'Crear Sala'}
         </button>

@@ -1,14 +1,14 @@
-// src/socket.ts
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
-const BACKEND_URL = 
-  import.meta.env.MODE === 'production'
-    ? 'https://chat-espe-backend-production.up.railway.app'
-    : 'http://localhost:5000';
+// Esta variable detectará automáticamente el hostname
+// Si estás en localhost, usará 'localhost'
+// Si tu amigo está en 192.168.100.36, usará '192.168.100.36'
+// Se conectará al backend en el puerto 5000
+const URL = `http://${window.location.hostname}:5000`;
 
-const socket: Socket = io(BACKEND_URL, {
-  transports: ['websocket'],
+const socket = io(URL, {
   autoConnect: false,
+  withCredentials: true // Añadido por si acaso (buena práctica)
 });
 
 export default socket;

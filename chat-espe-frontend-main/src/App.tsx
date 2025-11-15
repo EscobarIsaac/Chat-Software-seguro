@@ -2,31 +2,46 @@ import React, { useState } from 'react';
 import AdminLogin from './components/AdminLogin';
 import CreateRoom from './components/CreateRoom';
 import UserJoin from './pages/UserJoin';
+// 1. IMPORTA EL NUEVO COMPONENTE
+import AdminDashboard from './components/AdminDashboard';
+import './index.css'; // Asegúrate de importar tus estilos
+
+// Define un tipo para la sala creada
+type CreatedRoomInfo = {
+  id: string;
+  pin: string;
+};
 
 const App: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [showCreatedRoomId, setShowCreatedRoomId] = useState('');
+  
+  // El estado ahora guarda el objeto completo (o null)
+  const [createdRoom, setCreatedRoom] = useState<CreatedRoomInfo | null>(null);
 
   const handleLogin = () => {
     setIsAdmin(true);
   };
 
-  const handleRoomCreated = (roomId: string) => {
-    setShowCreatedRoomId(roomId);
-    alert(`✅ Sala creada exitosamente!\n\nID: ${roomId}\n\n¡Comparte este ID y PIN con los usuarios!`);
+  // Esta función ahora recibe el objeto completo
+  const handleRoomCreated = (room: CreatedRoomInfo) => {
+    setCreatedRoom(room);
+    
+    // El alert ahora muestra el ID y el PIN
+    alert(`✅ Sala creada exitosamente!\n\nID: ${room.id}\nPIN: ${room.pin}\n\n¡Comparte estos datos con los usuarios!`);
   };
 
   const handleLogout = () => {
     setIsAdmin(false);
-    setShowCreatedRoomId('');
+    setCreatedRoom(null); // Resetea el objeto
   };
 
+  // --- VISTA DE USUARIO (SI NO ES ADMIN) ---
   if (!isAdmin) {
     return (
       <div className="container">
         <div className="header">
-          <h1>💬 Chat Seguro ESPE</h1>
-          <p style={{ fontSize: '1.2rem' }}>Sistema de Salas Seguras en Tiempo Real</p>
+          <h1>Chat para amigos</h1>
+          <p style={{ fontSize: '1.2rem' }}>Sala de chat seguro</p>
         </div>
         <div className="flex">
           <AdminLogin onLogin={handleLogin} />
@@ -36,11 +51,12 @@ const App: React.FC = () => {
     );
   }
 
+  // --- VISTA DE ADMINISTRADOR ---
   return (
     <div className="container">
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h2 style={{ color: '#667eea', marginBottom: '10px' }}>👑 Panel de Administración</h2>
-        <button onClick={handleLogout} className="danger" style={{ 
+        <h2 style={{ color: '#00c8a0', marginBottom: '10px' }}>👑 Panel de Administración</h2>
+        <button onClick={handleLogout} className="danger-btn" style={{ 
           width: 'auto', 
           padding: '10px 20px', 
           marginBottom: '20px',
@@ -48,23 +64,41 @@ const App: React.FC = () => {
         }}>
           Cerrar Sesión
         </button>
-        {showCreatedRoomId && (
+        
+        {/* Recuadro verde que muestra ID y PIN */}
+        {createdRoom && (
           <div style={{
-            background: '#d4edda',
-            color: '#155724',
+            background: '#005f50', // Verde oscuro (modo oscuro)
+            color: '#e0e0e0',
             padding: '15px',
             borderRadius: '10px',
             marginBottom: '20px',
-            border: '2px solid #c3e6cb'
+            border: '2px solid #00c8a0'
           }}>
             <strong>Última sala creada:</strong><br/>
-            <span style={{ fontSize: '1.5rem', color: '#28a745' }}>
-              {showCreatedRoomId}
+            <span style={{ fontSize: '1.5rem', color: '#00c8a0', display: 'block' }}>
+              ID: {createdRoom.id}
+            </span>
+            <span style={{ fontSize: '1.5rem', color: '#e0e0e0', display: 'block' }}>
+              PIN: {createdRoom.pin}
             </span>
           </div>
         )}
       </div>
-      <CreateRoom onRoomCreated={handleRoomCreated} />
+      
+      {/* Layout de dos columnas para el admin */}
+      <div className="flex">
+        {/* Columna para crear sala */}
+        <div style={{ flex: 1, minWidth: '300px' }}>
+          <CreateRoom onRoomCreated={handleRoomCreated} />
+        </div>
+        
+        {/* Columna para ver salas */}
+        <div style={{ flex: 2, minWidth: '400px' }}>
+          <AdminDashboard />
+        </div>
+      </div>
+      
     </div>
   );
 };
