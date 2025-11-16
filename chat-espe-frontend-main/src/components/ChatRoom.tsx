@@ -7,9 +7,10 @@ interface Props {
   roomId: string;
   pin: string;
   nickname: string;
+  onLeaveRoom?: () => void;
 }
 
-const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname }) => {
+const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname, onLeaveRoom }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [users, setUsers] = useState<string[]>([]);
   const [input, setInput] = useState('');
@@ -173,14 +174,25 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname }) => {
       
       <div className="chat-container">
         <div className="chat-header">
-          <div>
-            🗨️ Sala: <strong className="room-id">{roomId}</strong>
+          <div className="header-left">
+            <div>
+              🗨️ Sala: <strong className="room-id">{roomId}</strong>
+            </div>
+            <div className="status">
+              👤 <strong>{nickname}</strong> | 
+              📡 {connected ? '🟢 Conectado' : '🔴 Desconectado'} | 
+              👥 {users.length} usuarios
+            </div>
           </div>
-          <div className="status">
-            👤 <strong>{nickname}</strong> | 
-            📡 {connected ? '🟢 Conectado' : '🔴 Desconectado'} | 
-            👥 {users.length} usuarios
-          </div>
+          {onLeaveRoom && (
+            <button 
+              onClick={onLeaveRoom}
+              className="leave-room-btn"
+              title="Salir de la sala"
+            >
+              ← Salir
+            </button>
+          )}
         </div>
         
         <div className="user-list">

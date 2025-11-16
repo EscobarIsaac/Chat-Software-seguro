@@ -194,6 +194,14 @@ button:hover {
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+/* Balanceado específico para los dos paneles principales del homepage */
+.container .flex > .card {
+  flex: 1 1 45%;
+  min-width: 400px;
+  max-width: none;
 }
 
 /* ==============================================
@@ -221,8 +229,15 @@ button:hover {
   font-size: 1.1rem;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
 }
 
 .chat-header .room-id {
@@ -238,6 +253,27 @@ button:hover {
   align-items: center;
   gap: 6px;
   font-size: 0.9rem;
+}
+
+.leave-room-btn {
+  background: rgba(229, 62, 62, 0.9);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.leave-room-btn:hover {
+  background: rgba(229, 62, 62, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
 }
 
 /* ==============================================
@@ -667,4 +703,144 @@ button:hover {
 .retry-button:hover {
   background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
   transform: translateY(-1px);
+}
+
+/* ==============================================
+   SINGLE PANEL MODE (PRODUCCIÓN)
+   ============================================== */
+.single-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  padding: 40px 20px;
+}
+
+.single-panel > * {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Modo desarrollo - indicador visual */
+.development-indicator {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 107, 107, 0.9);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  z-index: 1000;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* ==============================================
+   USER JOIN COMPONENT - ALINEACIÓN CENTRADA
+   ============================================== */
+.user-join-card {
+  max-width: 450px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.user-join-title {
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: #667eea;
+  text-align: center;
+  font-weight: 600;
+}
+
+.user-join-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  text-align: left;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #b0b0b0;
+  margin-left: 4px;
+}
+
+.input-group input {
+  padding: 16px 20px;
+  font-size: 16px;
+  border: 2px solid #404040;
+  border-radius: 12px;
+  background: #2a2a2a;
+  color: #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+.join-button {
+  margin-top: 15px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.join-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.join-button:active {
+  transform: translateY(0);
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 480px) {
+  .user-join-card {
+    max-width: 95%;
+    padding: 30px 20px;
+  }
+  
+  .user-join-title {
+    font-size: 1.5rem;
+  }
+  
+  .input-group input,
+  .join-button {
+    font-size: 14px;
+    padding: 14px 16px;
+  }
 }

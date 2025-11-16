@@ -36,17 +36,12 @@ const ChatRoomPage: React.FC = () => {
   }
 
   return (
-    <div style={{ position: 'relative' }}>
-      {/* Botón de salir flotante */}
-      <button
-        onClick={handleLeaveRoom}
-        className="floating-btn"
-      >
-        ← Salir de la Sala
-      </button>
-      
-      <ChatRoom roomId={roomId} pin={pin} nickname={nickname} />
-    </div>
+    <ChatRoom 
+      roomId={roomId} 
+      pin={pin} 
+      nickname={nickname} 
+      onLeaveRoom={handleLeaveRoom}
+    />
   );
 };
 

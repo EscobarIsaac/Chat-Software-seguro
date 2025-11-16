@@ -6,7 +6,6 @@ validation_test_files/
 *.temp
 
 # Archivos de configuración local
-.env
 *.local
 
 # Logs del sistema
@@ -14,7 +13,6 @@ validation_test_files/
 
 # Directorios de dependencias
 node_modules/
-venv/
 __pycache__/
 
 # Archivos del IDE

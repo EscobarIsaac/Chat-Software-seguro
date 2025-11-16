@@ -18,34 +18,51 @@ const UserJoin: React.FC = () => {
   };
 
   return (
-    <div className="card" style={{ maxWidth: '400px', flex: 1 }}>
-      <h2 style={{ marginBottom: '20px', color: '#667eea', textAlign: 'center' }}>
+    <div className="card user-join-card">
+      <h2 className="user-join-title">
         🚪 Unirse a Sala
       </h2>
-      <form onSubmit={handleJoin}>
-        <input
-          placeholder="ID de la sala (8 caracteres)"
-          value={roomId}
-          onChange={e => setRoomId(e.target.value)}  // ← SIN toUpperCase
-          maxLength={8}
-          required
-        />
-        <input
-          type="password"
-          placeholder="PIN (4+ dígitos)"
-          value={pin}
-          onChange={e => setPin(e.target.value)}
-          minLength={4}
-          required
-        />
-        <input
-          placeholder="Tu nickname"
-          value={nickname}
-          onChange={e => setNickname(e.target.value)}
-          maxLength={20}
-          required
-        />
-        <button type="submit">🚀 Unirse al Chat</button>
+      <form onSubmit={handleJoin} className="user-join-form">
+        <div className="input-group">
+          <label htmlFor="roomId">ID de la sala</label>
+          <input
+            id="roomId"
+            placeholder="Ingresa el ID de 8 caracteres"
+            value={roomId}
+            onChange={e => setRoomId(e.target.value)}
+            maxLength={8}
+            required
+          />
+        </div>
+        
+        <div className="input-group">
+          <label htmlFor="pin">PIN de acceso</label>
+          <input
+            id="pin"
+            type="password"
+            placeholder="PIN de 4+ dígitos"
+            value={pin}
+            onChange={e => setPin(e.target.value)}
+            minLength={4}
+            required
+          />
+        </div>
+        
+        <div className="input-group">
+          <label htmlFor="nickname">Tu nombre</label>
+          <input
+            id="nickname"
+            placeholder="¿Cómo te llamas?"
+            value={nickname}
+            onChange={e => setNickname(e.target.value)}
+            maxLength={20}
+            required
+          />
+        </div>
+        
+        <button type="submit" className="join-button">
+          🚀 Unirse al Chat
+        </button>
       </form>
     </div>
   );
