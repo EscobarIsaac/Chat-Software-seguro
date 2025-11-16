@@ -14,8 +14,16 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname }) => {
   const [users, setUsers] = useState<string[]>([]);
   const [input, setInput] = useState('');
   const [connected, setConnected] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationResult, setValidationResult] = useState<{
+    show: boolean;
+    success: boolean;
+    message: string;
+    fileName?: string;
+  }>({ show: false, success: false, message: '' });
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -69,103 +77,188 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname }) => {
     setInput('');
   };
 
-  const sendFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  // Función para manejar selección de archivos
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file || !connected) return;
-    
-    if (file.size > 10 * 1024 * 1024) { // Límite de 10MB
-      alert('Archivo demasiado grande (máx 10MB)');
+
+    setIsValidating(true);
+
+    // Validación básica del lado cliente
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    if (file.size > maxSize) {
+      showValidationMessage(false, 'Archivo muy grande (máx 50MB)');
+      setIsValidating(false);
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      // ARREGLO 1: Añade 'username: nickname' al emitir
-      socket.emit('file', {
-        file: (reader.result as string).split(',')[1],
-        filename: file.name,
-        filetype: file.type,
-        username: nickname, // <-- ¡ARREGLO AÑADIDO!
-        timestamp: new Date().toISOString()
+    try {
+      // Enviar archivo al backend para validación
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('originalName', file.name);
+
+      const response = await fetch('http://localhost:5000/api/upload-file', {
+        method: 'POST',
+        body: formData,
       });
-    };
-    reader.readAsDataURL(file);
-    e.target.value = ''; // Reset input
+
+      const result = await response.json();
+
+      if (response.ok && result.success && result.fileInfo) {
+        // Archivo válido - mostrar popup verde
+        showValidationMessage(true, `✅ ${result.message}`);
+        
+        // Enviar archivo al chat después de la validación
+        socket.emit('file', {
+          file: result.fileInfo.data,
+          filename: result.fileInfo.name,
+          filetype: result.fileInfo.type,
+          username: nickname,
+          timestamp: new Date().toISOString(),
+          hash: result.fileInfo.hash
+        });
+      } else {
+        // Archivo rechazado - mostrar popup rojo con razón específica
+        const errorMessage = result.message || result.error || 'Error de validación desconocido';
+        showValidationMessage(false, `❌ ${errorMessage}`);
+      }
+    } catch (error) {
+      showValidationMessage(false, 'Error al validar archivo');
+      console.error('Error uploading file:', error);
+    }
+
+    setIsValidating(false);
+    // Limpiar input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Función para mostrar mensaje de validación temporal
+  const showValidationMessage = (success: boolean, message: string) => {
+    setValidationResult({ show: true, success, message });
+    
+    // Ocultar mensaje después de 3 segundos
+    setTimeout(() => {
+      setValidationResult(prev => ({ ...prev, show: false }));
+    }, 3000);
   };
 
   return (
     <div className="container">
-      <div className="card">
-        <div className="chat-header">
-          🗨️ Sala: <strong>{roomId}</strong> | 
-          👤 <strong>{nickname}</strong> | 
-          📡 {connected ? '🟢 Conectado' : '🔴 Desconectado'} | 
-          👥 {users.length} usuarios
+      {/* Mostrar resultado de validación temporal */}
+      {validationResult.show && (
+        <div className={`validation-popup ${validationResult.success ? 'validation-success' : 'validation-error'}`}>
+          <div className="validation-content">
+            <span className="validation-icon">
+              {validationResult.success ? '✅' : '❌'}
+            </span>
+            <span className="validation-message">
+              {validationResult.message}
+            </span>
+          </div>
         </div>
+      )}
+      
+      {/* Indicador de validación en progreso */}
+      {isValidating && (
+        <div className="validation-popup validation-loading">
+          <div className="validation-content">
+            <span className="validation-spinner">🔄</span>
+            <span className="validation-message">Validando archivo...</span>
+          </div>
+        </div>
+      )}
+      
+      <div className="chat-container">
+        <div className="chat-header">
+          <div>
+            🗨️ Sala: <strong className="room-id">{roomId}</strong>
+          </div>
+          <div className="status">
+            👤 <strong>{nickname}</strong> | 
+            📡 {connected ? '🟢 Conectado' : '🔴 Desconectado'} | 
+            👥 {users.length} usuarios
+          </div>
+        </div>
+        
         <div className="user-list">
           Conectados: {users.join(', ') || 'Ninguno'}
         </div>
-      </div>
 
-      <div className="chat-container">
         <div className="chat-messages">
           {messages.map((msg, i) => (
             <div
               key={i}
-              // ARREGLO 1 (Explicación): Ahora que envías el 'username',
-              // esta comparación 'msg.username === nickname' funcionará
-              // y tus mensajes se verán con la clase 'own'
               className={`message ${msg.username === nickname ? 'own' : 'other'}`}
             >
-              <strong>{msg.username}</strong>
+              <div className="username">{msg.username}</div>
               {msg.type === 'text' ? (
-                <span style={{ display: 'block', marginTop: '5px' }}>{msg.msg}</span>
+                <div style={{ marginTop: '4px' }}>{msg.msg}</div>
               ) : (
-                <a
-                  href={`data:${msg.filetype};base64,${msg.file}`}
-                  download={msg.filename}
-                  className="file-link"
-                  style={{ display: 'block', marginTop: '5px' }}
-                >
-                  📎 {msg.filename} ({(msg.file?.length || 0) / 1024 | 0} KB)
-                </a>
+                <div className="file-message" style={{ marginTop: '4px' }}>
+                  <span className="file-icon">📎</span>
+                  <a
+                    href={`data:${msg.filetype};base64,${msg.file}`}
+                    download={msg.filename}
+                    className="file-link"
+                  >
+                    {msg.filename}
+                  </a>
+                  <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
+                    {((msg.file?.length || 0) * 0.75 / 1024).toFixed(1)} KB
+                  </div>
+                </div>
               )}
+              <div className="timestamp">
+                {new Date(msg.timestamp).toLocaleTimeString('es-ES', { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })}
+              </div>
             </div>
           ))}
-          {/* ARREGLO 2 (Explicación): Este div es el marcador
-          al que el 'useEffect' hará scroll automáticamente */}
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="chat-input">
+        <div className="chat-input-container">
           <input
+            className="chat-input"
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyPress={e => e.key === 'Enter' && sendMessage()}
             placeholder="Escribe un mensaje... (Enter para enviar)"
             disabled={!connected}
           />
-          <button onClick={sendMessage} disabled={!connected || !input.trim()}>
-            Enviar
-          </button>
-          <button
-            type="button"
-            className="secondary"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={!connected}
-          >
-            📎 Archivo
-          </button>
+          <div className="input-actions">
+            <button
+              className="input-btn send-btn"
+              onClick={sendMessage}
+              disabled={!connected || !input.trim()}
+              title="Enviar mensaje"
+            >
+              ➤
+            </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              style={{ display: 'none' }}
+              accept="image/*,audio/*,video/*,.pdf,.txt"
+              disabled={!connected}
+            />
+            <button
+              className="input-btn file-btn"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={!connected || isValidating}
+              title="Adjuntar archivo"
+            >
+              📎
+            </button>
+          </div>
         </div>
       </div>
-      
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={sendFile}
-        accept="image/*,.pdf,.doc,.docx,.txt"
-        style={{ display: 'none' }}
-      />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import bcrypt
 from models import rooms, user_sessions, db_lock
 from datetime import datetime
 
+
 def create_room(name, pin, room_type):
     """Crear sala con PIN encriptado correctamente"""
     with db_lock:
@@ -15,12 +16,14 @@ def create_room(name, pin, room_type):
             "id": room_id,
             "name": name,
             "pin": pin_hash,
+            "pin_display": pin,  # PIN en texto plano para mostrar al admin
             "type": room_type,
             "created_at": datetime.utcnow()
         }
         rooms.insert_one(room_data)
         print(f"🔐 Sala creada: {room_id} | PIN hasheado: {pin_hash[:20]}...")
         return room_id
+
 
 def verify_pin(room_id, pin):
     """Verificar PIN con encoding correcto"""
@@ -29,7 +32,7 @@ def verify_pin(room_id, pin):
         if not room:
             print(f"❌ Sala no encontrada: {room_id}")
             return False
-        
+
         # SIEMPRE usar .encode('utf-8') explícito
         pin_bytes = pin.encode('utf-8')
         result = bcrypt.checkpw(pin_bytes, room["pin"].encode('utf-8'))
@@ -38,6 +41,7 @@ def verify_pin(room_id, pin):
     except Exception as e:
         print(f"❌ Error verificando PIN: {e}")
         return False
+
 
 def get_room(room_id):
     return rooms.find_one({"id": room_id})

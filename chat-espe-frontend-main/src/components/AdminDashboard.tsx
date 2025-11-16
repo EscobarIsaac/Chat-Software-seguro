@@ -7,6 +7,8 @@ type RoomInfo = {
   name: string;
   type: 'text' | 'multimedia';
   userCount: number;
+  pin?: string; // PIN hasheado (no se muestra)
+  pin_display?: string; // PIN en texto plano para el admin
 };
 
 // Función para obtener la URL base de la API
@@ -71,42 +73,112 @@ const AdminDashboard: React.FC = () => {
         Refrescar Lista
       </button>
       
-      <table className="dashboard-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>ID de Sala</th>
-            <th>Tipo</th>
-            <th>Usuarios</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rooms.length === 0 ? (
-            <tr>
-              <td colSpan={5} style={{ textAlign: 'center' }}>No hay salas creadas.</td>
+      <div style={{ overflowX: 'auto' }}>
+        <table className="dashboard-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ backgroundColor: '#2a2a2a' }}>
+              <th style={{ padding: '12px 15px', textAlign: 'left', borderBottom: '2px solid #00c8a0' }}>Nombre</th>
+              <th style={{ padding: '12px 15px', textAlign: 'left', borderBottom: '2px solid #00c8a0' }}>ID de Sala</th>
+              <th style={{ padding: '12px 15px', textAlign: 'left', borderBottom: '2px solid #00c8a0' }}>PIN</th>
+              <th style={{ padding: '12px 15px', textAlign: 'left', borderBottom: '2px solid #00c8a0' }}>Tipo</th>
+              <th style={{ padding: '12px 15px', textAlign: 'center', borderBottom: '2px solid #00c8a0' }}>Usuarios</th>
+              <th style={{ padding: '12px 15px', textAlign: 'center', borderBottom: '2px solid #00c8a0' }}>Acciones</th>
             </tr>
-          ) : (
-            rooms.map(room => (
-              <tr key={room.id}>
-                <td>{room.name}</td>
-                <td><code>{room.id}</code></td>
-                <td>{room.type}</td>
-                <td>{room.userCount}</td>
-                <td>
-                  <button
-                    className="danger-btn"
-                    onClick={() => handleDelete(room.id)}
-                    disabled={room.userCount > 0} 
-                  >
-                    Eliminar
-                  </button>
+          </thead>
+          <tbody>
+            {rooms.length === 0 ? (
+              <tr>
+                <td colSpan={6} style={{ 
+                  padding: '20px', 
+                  textAlign: 'center', 
+                  color: '#999',
+                  fontStyle: 'italic'
+                }}>
+                  No hay salas creadas.
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              rooms.map(room => (
+                <tr key={room.id} style={{ 
+                  borderBottom: '1px solid #444',
+                  transition: 'background-color 0.2s'
+                }}>
+                  <td style={{ 
+                    padding: '12px 15px',
+                    fontWeight: 'bold',
+                    color: '#e0e0e0'
+                  }}>
+                    {room.name}
+                  </td>
+                  <td style={{ padding: '12px 15px' }}>
+                    <code style={{
+                      backgroundColor: '#1a1a1a',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      color: '#00c8a0',
+                      fontSize: '14px'
+                    }}>
+                      {room.id}
+                    </code>
+                  </td>
+                  <td style={{ padding: '12px 15px' }}>
+                    <span style={{
+                      backgroundColor: '#2d3748',
+                      color: '#ffd700',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      fontSize: '14px',
+                      fontFamily: 'monospace',
+                      fontWeight: 'bold'
+                    }}>
+                      {(room as any).pin_display || '****'}
+                    </span>
+                  </td>
+                  <td style={{ 
+                    padding: '12px 15px',
+                    textTransform: 'capitalize'
+                  }}>
+                    <span style={{
+                      padding: '4px 12px',
+                      borderRadius: '20px',
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                      backgroundColor: room.type === 'multimedia' ? '#4c1d95' : '#1e40af',
+                      color: 'white'
+                    }}>
+                      {room.type}
+                    </span>
+                  </td>
+                  <td style={{ 
+                    padding: '12px 15px', 
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    color: room.userCount > 0 ? '#00c8a0' : '#999'
+                  }}>
+                    {room.userCount}
+                  </td>
+                  <td style={{ padding: '12px 15px', textAlign: 'center' }}>
+                    <button
+                      className="danger-btn"
+                      onClick={() => handleDelete(room.id)}
+                      disabled={room.userCount > 0}
+                      style={{
+                        padding: '6px 12px',
+                        fontSize: '12px',
+                        borderRadius: '6px',
+                        opacity: room.userCount > 0 ? 0.5 : 1,
+                        cursor: room.userCount > 0 ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      ELIMINAR
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
       <p style={{marginTop: '15px', fontSize: '12px', color: '#aaa'}}>
         * Solo puedes eliminar salas que tengan 0 usuarios.
       </p>
