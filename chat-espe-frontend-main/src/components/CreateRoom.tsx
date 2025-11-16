@@ -21,11 +21,10 @@ const getApiBase = () => {
 };
 
 const CreateRoom: React.FC<Props> = ({ onRoomCreated }) => {
-  // Ahora incluimos el tipo de sala en el formulario
-  const [form, setForm] = useState<RoomForm>({
+  // El 'type' ya no es necesario aquí
+  const [form, setForm] = useState<Omit<RoomForm, 'type'>>({
     name: '',
     pin: '',
-    type: 'text', // Valor por defecto
   });
   const [loading, setLoading] = useState(false);
 
@@ -47,7 +46,7 @@ const CreateRoom: React.FC<Props> = ({ onRoomCreated }) => {
       
       onRoomCreated(roomInfo); // <-- Envía el objeto completo
 
-      setForm({ name: '', pin: '', type: 'text' }); // Resetea el formulario
+      setForm({ name: '', pin: '' }); // Resetea el formulario
     } catch (err: unknown) {
       const error = err as AxiosError;
       alert('Error al crear sala');
@@ -59,10 +58,10 @@ const CreateRoom: React.FC<Props> = ({ onRoomCreated }) => {
 
   return (
     <div className="card" style={{ maxWidth: '400px' }}>
-      <h3 style={{ marginBottom: '20px', color: '#00c8a0', textAlign: 'center' }}>
+      <h3 style={{ marginBottom: '20px', color: '#00c8a0' }}>
         Crear Nueva Sala
       </h3>
-      <form onSubmit={handleSubmit} className="create-room-form">
+      <form onSubmit={handleSubmit}>
         <input
           placeholder="Nombre de la sala"
           value={form.name}
@@ -80,15 +79,7 @@ const CreateRoom: React.FC<Props> = ({ onRoomCreated }) => {
           disabled={loading}
         />
         
-        {/* Selector de tipo de sala */}
-        <select
-          value={form.type}
-          onChange={e => setForm({ ...form, type: e.target.value as 'text' | 'multimedia' })}
-          disabled={loading}
-        >
-          <option value="text">📝 Sala de Texto</option>
-          <option value="multimedia">🎬 Sala Multimedia</option>
-        </select>
+        {/* --- CAMPO <select> ELIMINADO --- */}
         
         <button type="submit" disabled={loading}>
           {loading ? 'Creando...' : 'Crear Sala'}
