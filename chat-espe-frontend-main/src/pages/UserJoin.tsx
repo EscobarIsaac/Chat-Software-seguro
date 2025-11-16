@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
-import ChatRoom from '../components/ChatRoom';
+import { useNavigate } from 'react-router-dom';
 
 const UserJoin: React.FC = () => {
   const [roomId, setRoomId] = useState('');
   const [pin, setPin] = useState('');
   const [nickname, setNickname] = useState('');
-  const [joined, setJoined] = useState(false);
+  const navigate = useNavigate();
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
     if (roomId && pin.length >= 4 && nickname) {
-      setJoined(true);
+      // Navegar a la sala de chat con los datos
+      navigate(`/chat/${roomId}`, {
+        state: { pin, nickname }
+      });
     }
   };
-
-  if (joined) {
-    return <ChatRoom roomId={roomId} pin={pin} nickname={nickname} />;
-  }
 
   return (
     <div className="card" style={{ maxWidth: '400px', flex: 1 }}>
