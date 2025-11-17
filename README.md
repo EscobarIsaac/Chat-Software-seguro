@@ -1,19 +1,19 @@
-# 🛡️ Chat Software Seguro
+# Chat Software Seguro
 
-## � Descripción General
+## Descripción General
 
 Sistema de chat en tiempo real con **seguridad avanzada multicapa** para archivos multimedia. Creado con Python/Flask y React/TypeScript, permite a administradores crear salas protegidas por PIN donde los usuarios pueden conversar y compartir archivos de forma **completamente segura**.
 
-## ⭐ Características Principales
+## Características Principales
 
-### 🎯 **Sistema de Chat**
+###  **Sistema de Chat**
 - **Panel Administrativo:** Interfaz completa para gestión de salas (admin / espe2025)
 - **Salas Protegidas:** Creación con PIN único y selección de tipo (Text/Multimedia)
 - **Chat en Tiempo Real:** Comunicación instantánea via WebSockets (Socket.IO)
 - **Navegación por URL:** Sistema de rutas con React Router para navegación fluida
 - **Acceso en Red:** Configurado para usuarios en la misma red WiFi
 
-### 🛡️ **Sistema de Seguridad Avanzado** 
+### **Sistema de Seguridad Avanzado** 
 - **Validación Multicapa:** Cliente y servidor con múltiples puntos de control
 - **Detección de Malware:** Escaneo de 11+ patrones maliciosos (PHP, JavaScript, etc.)
 - **Verificación MIME:** Análisis real vs extensión para prevenir spoofing
@@ -21,25 +21,25 @@ Sistema de chat en tiempo real con **seguridad avanzada multicapa** para archivo
 - **Límites Inteligentes:** Tamaño máximo 50MB, dimensiones controladas
 - **Feedback Visual:** Popups temporales (3 segundos) con resultado de validación
 
-### 📁 **Formatos Soportados Seguros**
-- **📸 Imágenes:** JPEG, PNG, GIF, WebP (verificación de corrupción)
-- **🎵 Audio:** MP3, WAV, OGG, M4A (análisis de metadatos)  
-- **🎬 Video:** MP4, AVI, MKV, WebM (headers validados)
-- **📄 Documentos:** PDF, TXT (contenido escaneado)
+###  **Formatos Soportados Seguros**
+- ** Imágenes:** JPEG, PNG, GIF, WebP (verificación de corrupción)
+- ** Audio:** MP3, WAV, OGG, M4A (análisis de metadatos)  
+- ** Video:** MP4, AVI, MKV, WebM (headers validados)
+- ** Documentos:** PDF, TXT (contenido escaneado)
 
-### 🎨 **Interfaz de Usuario**
+###  **Interfaz de Usuario**
 - **Botón de Clip Simple:** Upload familiar (📎) con validación transparente
 - **Popups Informativos:** Verde (✅ válido), Rojo (❌ rechazado), Azul (🔄 validando)
 - **Dashboard Mejorado:** Gestión de salas con información completa
 - **Diseño Responsivo:** Interfaz moderna optimizada para todos los dispositivos
 
-## 🛠️ Tecnologías y Arquitectura
+##  Tecnologías y Arquitectura
 
 ### **Backend (chat-espe-backend-main/)**
 ```
-├── main.py              # Servidor Flask + API endpoints + WebSocket
-├── models.py            # MongoDB Atlas con configuración TLS automática
-├── rooms.py             # Gestión de salas con tipos y PINs únicos
+├── main.py              # Servidor  Flask + API endpoints + WebSocket
+├── models.py            # MongoDB Atlas con  configuración TLS automática
+├── rooms.py             # Gestión de  salas con tipos y PINs únicos
 ├── file_security.py     # Sistema de validación multicapa avanzado
 ├── auth.py              # Autenticación segura de administradores
 └── requirements.txt     # Dependencias del proyecto
@@ -69,7 +69,7 @@ Sistema de chat en tiempo real con **seguridad avanzada multicapa** para archivo
 - **Socket.IO Client** para conexión WebSocket en tiempo real
 - **Componentes de Seguridad** integrados con validación visual
 
-## ⚙️ Requisitos y Dependencias
+## Requisitos y Dependencias
 
 ### **Requisitos del Sistema**
 - **Python 3.10+** (recomendado 3.11)
@@ -150,7 +150,7 @@ npm run dev -- --host
 ➜ Frontend disponible en: `http://localhost:3000`  
 ➜ Red local: `http://192.168.x.x:3000` (para otros usuarios)
 
-### **🔑 Acceso al Sistema**
+### ** Acceso al Sistema**
 
 #### **Para Administradores:**
 1. Ve a: `http://localhost:3000/admin/login`
@@ -164,15 +164,15 @@ npm run dev -- --host
 3. Elegir **nickname**
 4. ¡Chatear y compartir archivos de forma segura!
 
-## 📱 Guía de Uso Rápida
+##  Guía de Uso Rápida
 
-### **👑 Panel de Administrador**
+### ** Panel de Administrador**
 - **Crear Salas:** Nombre + PIN + Tipo (Text/Multimedia)
 - **Ver Salas Activas:** Lista con usuarios conectados
 - **Gestionar:** Eliminar salas vacías
 - **Navegar:** URLs amigables (`/admin`, `/admin/dashboard`)
 
-### **💬 Sala de Chat**
+### ** Sala de Chat**
 - **Mensajes:** Texto en tiempo real con timestamps
 - **Archivos Seguros:** Botón 📎 → seleccionar → validación automática → popup resultado
 - **Feedback Visual:** 
@@ -181,7 +181,7 @@ npm run dev -- --host
   - ❌ Rojo: "Motivo específico del rechazo" (3s)
 - **Navegación:** Botón "Salir de sala" con rutas automáticas
 
-## 🛡️ Sistema de Seguridad Detallado
+##  Sistema de Seguridad
 
 ### **Flujo de Validación de Archivos**
 ```
@@ -189,7 +189,7 @@ npm run dev -- --host
    ↓
 2. Validación cliente (tamaño, tipo básico)
    ↓
-3. Popup azul "Validando..." 🔄
+3. Popup azul "Validando..." 
    ↓
 4. Envío a backend para análisis profundo
    ↓
@@ -220,7 +220,7 @@ exec('rm -rf /')                   # Comandos del sistema
 - **Audio/Video:** Duración máxima (2h), verificación de metadatos, estructura de archivos
 - **Documentos:** Escaneo de contenido, verificación de integridad
 
-## ⚠️ Solución de Problemas
+##  Solución de Problemas
 
 ### **Errores de Configuración**
 ```bash
@@ -250,9 +250,9 @@ socketio = SocketIO(app, max_http_buffer_size=20*1024*1024)
 - **Sin popups:** Comprobar que el endpoint `/api/upload-file` esté funcionando
 - **Archivos válidos rechazados:** Revisar logs del backend para errores específicos
 
-## 📊 Estado del Proyecto
+## Estado del Proyecto
 
-### ✅ **Implementaciones Completadas**
+### **Implementaciones Completadas**
 - [x] **Backend TLS:** Conexión segura a MongoDB Atlas con certificados automáticos
 - [x] **Sistema de Rutas:** React Router con navegación por URL completa  
 - [x] **Panel Admin:** Interfaz mejorada con gestión completa de salas
@@ -261,7 +261,7 @@ socketio = SocketIO(app, max_http_buffer_size=20*1024*1024)
 - [x] **UX Optimizada:** Popups temporales con feedback claro y específico
 - [x] **Arquitectura Modular:** Código organizado y mantenible
 
-### 🎯 **Funcionalidades Avanzadas**
+###  **Funcionalidades Avanzadas**
 - **Compatibilidad:** Funciona con o sin dependencias opcionales
 - **Logs de Seguridad:** Registro detallado de validaciones y rechazos
 - **Hash de Integridad:** SHA-256 para cada archivo válido
@@ -270,5 +270,5 @@ socketio = SocketIO(app, max_http_buffer_size=20*1024*1024)
 
 ---
 
-**🏆 Chat Software Seguro - Producción Ready**  
+** Chat Software Seguro - Producción Ready**  
 *Sistema completo con seguridad enterprise y experiencia de usuario optimizada*
