@@ -1,10 +1,10 @@
-#  Chat ESPE - Sistema de Chat Seguro con Detección de Esteganografía
+#  ChatAmigos - Sistema de Chat Seguro con Detección de Esteganografía
 
 ##  Visión General
 
-Chat ESPE es un sistema de comunicación en tiempo real diseñado con seguridad como prioridad. Incorpora tecnología avanzada de detección de esteganografía para prevenir la transmisión de archivos con contenido oculto, protegiendo a los usuarios contra amenazas de seguridad sofisticadas.
+ChatAmigos es un sistema de comunicación en tiempo real diseñado con seguridad como prioridad. Incorpora tecnología avanzada de detección de esteganografía para prevenir la transmisión de archivos con contenido oculto, protegiendo a los usuarios contra amenazas de seguridad sofisticadas.
 
-### ¿Por qué Chat ESPE?
+### ¿Por qué ChatAmigos?
 
 - ** Seguridad Avanzada**: Detección de esteganografía con 95% de precisión
 - ** Tiempo Real**: Comunicación instantánea con WebSockets
@@ -69,8 +69,8 @@ Chat ESPE es un sistema de comunicación en tiempo real diseñado con seguridad 
 ### 1️ Clonar el Repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/chat-espe.git
-cd chat-espe
+git clone https://github.com/EscobarIsaac/Chat-Software-seguro
+cd Chat-Software-seguro
 ```
 
 ### 2️ Configurar el Backend
@@ -522,7 +522,7 @@ logging.basicConfig(level=logging.DEBUG)
 - [ ] Integración con servicios externos (Google Drive, Dropbox)
 - [ ] Machine learning para mejorar detección de amenazas
 
-## 📊 Métricas y Performance
+## Métricas y Performance
 
 ### Benchmarks de Seguridad
 
