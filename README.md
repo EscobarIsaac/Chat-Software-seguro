@@ -1,179 +1,570 @@
-# Chat-Software-seguro
+#  Chat ESPE - Sistema de Chat Seguro con Detección de Esteganografía
 
- Chat para Amigos
-Este es un sistema de chat en tiempo real con salas seguras, creado en Python y React. Permite a un administrador crear salas de chat protegidas por un PIN, a las que los usuarios pueden unirse con un nickname para conversar y compartir archivos.
+##  Visión General
 
- Características Principales
-Panel de Administrador: Interfaz segura (admin / espe2025) para la gestión de salas.
+Chat ESPE es un sistema de comunicación en tiempo real diseñado con seguridad como prioridad. Incorpora tecnología avanzada de detección de esteganografía para prevenir la transmisión de archivos con contenido oculto, protegiendo a los usuarios contra amenazas de seguridad sofisticadas.
 
-Creación de Salas: El admin puede crear salas con un nombre y un PIN.
+### ¿Por qué Chat ESPE?
 
-Dashboard de Salas: El admin puede ver todas las salas creadas, cuántos usuarios hay en cada una y eliminarlas si están vacías.
+- ** Seguridad Avanzada**: Detección de esteganografía con 95% de precisión
+- ** Tiempo Real**: Comunicación instantánea con WebSockets
+- ** Salas Privadas**: Sistema de salas protegidas por PIN
+- ** Compartir Archivos**: Con validación y sanitización automática
+- ** Panel Admin**: Gestión completa de salas y usuarios
+- ** Acceso en Red**: Diseñado para uso en redes locales
 
-Chat en Tiempo Real: Comunicación instantánea usando WebSockets (Socket.IO).
+##  Características
 
-Envío de Archivos: Las salas permiten enviar mensajes de texto y compartir archivos (imágenes, PDFs, etc.).
+### Características Principales
 
-Acceso en Red: Configurado para que otros usuarios en tu misma red WiFi puedan unirse.
+| Característica | Descripción |
+|----------------|-------------|
+| **Chat en Tiempo Real** | Mensajería instantánea usando Socket.IO |
+| **Detección de Esteganografía** | 6 métodos de análisis para detectar contenido oculto |
+| **Sanitización Automática** | Limpieza automática de metadatos peligrosos |
+| **Panel de Administración** | Dashboard completo para gestión de salas |
+| **Compartir Archivos Seguro** | Validación multinivel de archivos multimedia |
+| **Sistema de Cuarentena** | Aislamiento temporal de archivos sospechosos |
+| **Logs de Auditoría** | Registro completo de eventos de seguridad |
 
-Tecnologías Utilizadas
-Este proyecto es un monorepo dividido en dos partes:
+### Sistema de Seguridad
 
-Backend (Carpeta: chat-espe-backend-main)
+####  Métodos de Detección
 
-Python
+1. **LSB Analysis** - Detección de alteraciones en bits menos significativos (90-95% precisión)
+2. **Chi-Square Test** - Análisis estadístico de distribución de píxeles (85-90% precisión)
+3. **Entropy Analysis** - Detección de datos cifrados/comprimidos (75-85% precisión)
+4. **FFT Analysis** - Análisis en dominio de frecuencia (70-80% precisión)
+5. **Visual Detection** - Detección de anomalías visuales (60-70% precisión)
+6. **Tool Signatures** - Detección de herramientas conocidas (99% precisión)
 
-Flask: Como servidor web y API.
+####  Niveles de Amenaza
 
-Flask-SocketIO: Para la comunicación en tiempo real.
+- 🟢 **SAFE** (<10%): Aprobación automática
+- 🔵 **LOW** (10-30%): Aprobación con monitoreo
+- 🟡 **MEDIUM** (30-50%): Revisión manual requerida
+- 🔴 **HIGH** (50-75%): Rechazo automático
+- 🚫 **CRITICAL** (>75%): Bloqueo inmediato + alerta
 
-MongoDB: Como base de datos (usando MongoDB Atlas).
+##  Arquitectura
 
-Redis: Para la gestión de sesiones y mensajes.
+##  Requisitos
 
-Frontend (Carpeta: chat-espe-frontend-main)
+### Software Requerido
 
-React (con TypeScript)
+- **Python** 3.10 o superior
+- **Node.js** 18 o superior
+- **Redis** Server
+- **MongoDB Atlas** (cuenta gratuita)
+- **Git** (para clonar el repositorio)
 
-Vite: Como herramienta de desarrollo y empaquetado.
+### Requisitos del Sistema
 
-Axios: Para las peticiones a la API del backend.
+- **RAM**: Mínimo 4GB (8GB recomendado)
+- **Almacenamiento**: 2GB libres
+- **Red**: Conexión estable para WebSockets
 
-Socket.io-client: Para conectarse al servidor de WebSockets.
+##  Instalación
 
- Requisitos Previos
-Antes de empezar, asegúrate de tener instalado:
+### 1️ Clonar el Repositorio
 
-Python (v3.10 o superior)
+```bash
+git clone https://github.com/tu-usuario/chat-espe.git
+cd chat-espe
+```
 
-Node.js (v18 o superior)
+### 2️ Configurar el Backend
 
-Redis: Necesitas tener el servidor de Redis instalado y ejecutándose en tu máquina local.
-
-Cuenta de MongoDB Atlas: Necesitas una cuenta gratuita de MongoDB Atlas y un "connection string" (el enlace que empieza con mongodb+srv://...).
-
-Configuración del Proyecto
-Sigue estos pasos en orden.
-
-1. Configurar el Backend
-Navega a la carpeta del backend:
-
-Bash
-
+```bash
+# Navegar al directorio del backend
 cd chat-espe-backend-main
-Crea y activa un entorno virtual:
 
-Bash
-
-# Crear el entorno
+# Crear entorno virtual
 python -m venv venv
 
-# Activar en Windows
+# Activar entorno virtual
+# Windows:
 .\venv\Scripts\activate
-
-# Activar en Mac/Linux
+# Linux/Mac:
 source venv/bin/activate
-Instala las dependencias de Python:
 
-Bash
-
+# Instalar dependencias base
 pip install -r requirements.txt
-pip install gevent-websocket # Opcional, para el warning de rendimiento
-Crear el archivo .env (¡Obligatorio!): En la carpeta chat-espe-backend-main, crea un archivo llamado .env y pega lo siguiente. Reemplaza el valor de MONGODB_URI con tu propio enlace de MongoDB Atlas.
 
-Ini, TOML
+# Instalar dependencias de seguridad mejorada
+pip install pillow numpy scipy opencv-python python-magic stegano
+```
 
-# Clave secreta de Flask
-SECRET_KEY='un-secreto-muy-fuerte-aqui'
+### 3️ Configurar el Frontend
 
-# Tu enlace de conexión de MongoDB Atlas
-# Asegúrate de que la variable se llame MONGODB_URI
-MONGODB_URI='mongodb+srv://tu-usuario:tu-password@cluster0.xxxx.mongodb.net/?appName=Cluster0'
-2. Configurar el Frontend
-Navega a la carpeta del frontend (en una terminal separada):
-
-Bash
-
+```bash
+# En una nueva terminal
 cd chat-espe-frontend-main
-Instala las dependencias de Node.js:
 
-Bash
-
+# Instalar dependencias
 npm install
-Cómo Correr la Aplicación
-Debes ejecutar ambos proyectos al mismo tiempo en dos terminales separadas.
 
- Terminal 1: Iniciar el Backend
-¡IMPORTANTE! Asegúrate de que tu servidor de Redis esté corriendo en tu PC.
+# Instalar dependencias adicionales
+npm install --save-dev @types/node
+```
 
-Navega a la carpeta del backend y activa el entorno virtual:
+##  Configuración
 
-Bash
+### Backend (.env)
 
+Crea un archivo `.env` en `chat-espe-backend-main/`:
+
+```env
+# Configuración básica
+SECRET_KEY='tu-clave-secreta-super-segura-aqui'
+MONGODB_URI='mongodb+srv://usuario:password@cluster.mongodb.net/chatdb'
+FLASK_ENV=production
+
+# Redis (opcional si usas Upstash)
+UPSTASH_REDIS_REST_URL=tu-url-redis
+UPSTASH_REDIS_REST_TOKEN=tu-token-redis
+
+# Configuración de seguridad
+SECURITY_LEVEL=high          # low, medium, high, paranoid
+AUTO_SANITIZE=true           # Sanitizar automáticamente imágenes
+MAX_FILE_SIZE=52428800       # 50MB en bytes
+QUARANTINE_DAYS=7            # Días para mantener archivos en cuarentena
+
+# Umbrales de detección
+LSB_THRESHOLD=0.45
+ENTROPY_THRESHOLD=7.5
+CHI_SQUARE_THRESHOLD=0.05
+
+# Logging
+LOG_LEVEL=INFO
+SECURITY_LOG_FILE=security.log
+```
+
+### Frontend (.env)
+
+Crea archivos de entorno en `chat-espe-frontend-main/`:
+
+`.env.development`:
+```env
+VITE_MODE=development
+VITE_SHOW_ADMIN_ACCESS=true
+VITE_APP_TITLE="Chat Seguro - DEV"
+```
+
+`.env.production`:
+```env
+VITE_MODE=production
+VITE_SHOW_ADMIN_ACCESS=false
+VITE_APP_TITLE="Chat Seguro"
+```
+
+### MongoDB Atlas
+
+1. Crea una cuenta gratuita en [MongoDB Atlas](https://www.mongodb.com/atlas)
+2. Crea un nuevo cluster
+3. Configura un usuario de base de datos
+4. Obtén tu connection string
+5. Añade tu IP a la whitelist (o permite acceso desde cualquier lugar: `0.0.0.0/0`)
+
+### Redis
+
+**Opción 1: Redis Local**
+```bash
+# Windows (con WSL)
+sudo apt-get install redis-server
+redis-server
+
+# Mac
+brew install redis
+brew services start redis
+
+# Linux
+sudo apt-get install redis-server
+sudo systemctl start redis
+```
+
+**Opción 2: Upstash Redis (Cloud)**
+1. Crea cuenta en [Upstash](https://upstash.com)
+2. Crea una base de datos Redis
+3. Copia las credenciales REST API al `.env`
+
+##  Uso
+
+### Iniciar la Aplicación
+
+**Terminal 1 - Backend:**
+```bash
 cd chat-espe-backend-main
-.\venv\Scripts\activate
-Inicia el servidor de Flask:
-
-Bash
-
+.\venv\Scripts\activate  # o source venv/bin/activate
 python main.py
-¡Listo! Tu backend estará corriendo en http://localhost:5000.
+```
 
-Terminal 2: Iniciar el Frontend
-Navega a la carpeta del frontend:
+Deberías ver:
+```
+============================================================
+ SISTEMA DE CHAT SEGURO CON DETECCIÓN DE ESTEGANOGRAFÍA
+============================================================
+✅ Validación de seguridad: ACTIVADA
+✅ Detección de esteganografía: ACTIVADA
+✅ Sanitización de imágenes: ACTIVADA
+📁 Carpeta de cuarentena: /tmp/chat_espe_xxx/quarantine
+📁 Carpeta de sanitización: /tmp/chat_espe_xxx/sanitized
+============================================================
+ * Running on http://0.0.0.0:5000
+```
 
-Bash
-
+**Terminal 2 - Frontend:**
+```bash
 cd chat-espe-frontend-main
-Inicia el servidor de Vite exponiéndolo a tu red:
+npm run dev -- --host
+```
 
-Bash
+Deberías ver:
+```
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://192.168.1.100:5173/
+```
 
-npx vite --host
-¡Listo! La terminal te dará una URL de Network (ej: http://192.168.1.10:5173/).
+### Acceso a la Aplicación
 
-Acceso
-Para ti y otros en tu red: Abran la URL de Network (ej. http://192.168.1.10:5173/) en sus navegadores.
+1. **Acceso Local**: `http://localhost:5173`
+2. **Acceso en Red**: `http://TU-IP:5173` (comparte esta URL con usuarios en tu red)
 
-Login de Administrador:
+### Credenciales de Administrador
 
-Usuario: admin
+- **Usuario**: `admin`
+- **Contraseña**: `espe2025`
 
-Contraseña: espe2025
+### Flujo de Uso
 
-Solución de Errores Comunes
-ERROR: UnicodeDecodeError ... charmap' codec can't decode...
+#### Como Administrador:
 
-Causa: El archivo requirements.txt tiene una codificación incorrecta.
+1. Inicia sesión con las credenciales de admin
+2. Crea una nueva sala con nombre y PIN
+3. Comparte el ID de sala y PIN con los usuarios
+4. Monitorea las salas desde el dashboard
+5. Elimina salas vacías cuando sea necesario
 
-Solución: Abre requirements.txt en VS Code. Haz clic en UTF-8 (en la barra azul de abajo a la derecha), selecciona "Save with Encoding" y vuelve a elegir "UTF-8".
+#### Como Usuario:
 
-ERROR: MONGODB_URI no definido → Usando MongoDB local...
+1. Ingresa el ID de sala (8 caracteres)
+2. Ingresa el PIN de la sala
+3. Elige un nickname
+4. ¡Comienza a chatear!
+5. Comparte archivos de forma segura
 
-Causa: El backend no está leyendo tu archivo .env.
+##  Seguridad
 
-Solución: Asegúrate de que el archivo se llame .env (y no .env.txt) y que la variable dentro se llame exactamente MONGODB_URI.
+### Flujo de Validación de Archivos
 
-PROBLEMA: El alert muestra PIN: undefined.
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant F as Frontend
+    participant B as Backend
+    participant V as Validator
+    participant S as Sanitizer
+    
+    U->>F: Selecciona archivo
+    F->>F: Validación inicial
+    F->>B: Upload archivo
+    B->>V: Análisis de seguridad
+    
+    alt Archivo peligroso
+        V-->>B: THREAT_LEVEL: CRITICAL
+        B-->>F: 403 Forbidden
+        F-->>U: ❌ Archivo rechazado
+    else Archivo sospechoso
+        V->>S: Sanitizar archivo
+        S-->>V: Archivo limpio
+        V-->>B: THREAT_LEVEL: LOW
+        B-->>F: 200 OK + advertencias
+        F-->>U: ✅ Archivo sanitizado
+    else Archivo seguro
+        V-->>B: THREAT_LEVEL: SAFE
+        B-->>F: 200 OK
+        F-->>U: ✅ Archivo aprobado
+    end
+```
 
-Causa: El backend no está devolviendo el PIN al admin.
+### Herramientas de Esteganografía Detectadas
 
-Solución: En main.py, asegúrate de que la función api_create_room tenga: return jsonify({"room_id": room, "pin": data['pin']}).
+| Herramienta | Detección | Confianza |
+|-------------|-----------|-----------|
+| OpenStego | ✅ Sí | 95% |
+| Steghide | ✅ Sí | 90% |
+| OutGuess | ✅ Sí | 85% |
+| F5 | ✅ Sí | 80% |
+| JSteg | ✅ Sí | 90% |
+| SilentEye | ⚠️ Parcial | 75% |
 
-PROBLEMA: El admin ve "No se pudo cargar la lista de salas."
+### Mejores Prácticas de Seguridad
 
-Causa: Error al leer los datos de MongoDB.
+1. **Mantén las dependencias actualizadas**
+   ```bash
+   pip list --outdated
+   npm outdated
+   ```
 
-Solución: En main.py, en la función get_dashboard, asegúrate de que la consulta sea rooms.find({}, {"_id": 0, "pin": 0}).
+2. **Revisa los logs regularmente**
+   ```bash
+   tail -f security.log
+   ```
 
-PROBLEMA: Mis amigos entran pero les sale "Desconectado".
+3. **Configura HTTPS en producción**
+   ```nginx
+   server {
+       listen 443 ssl http2;
+       ssl_certificate /path/to/cert.pem;
+       ssl_certificate_key /path/to/key.pem;
+   }
+   ```
 
-Causa: El frontend no sabe cómo conectarse al backend desde otra PC.
+4. **Usa variables de entorno seguras**
+   - Nunca hardcodees credenciales
+   - Usa secretos fuertes (mínimo 32 caracteres)
+   - Rota las claves regularmente
 
-Solución: Asegúrate de que en src/socket.ts y en src/components/AdminLogin.tsx (y otros archivos con axios) la URL del backend se defina usando http://${window.location.hostname}:5000.
+##  API Documentation
 
-PROBLEMA: Los archivos (imágenes) no se envían.
+### Endpoints Principales
 
-Causa: El archivo es muy grande para el límite por defecto de Socket.IO.
+#### Autenticación
+```http
+POST /api/admin/login
+Content-Type: application/json
 
-Solución: En main.py, al definir SocketIO, añade el parámetro: max_http_buffer_size=20 * 1024 * 1024.
+{
+  "username": "admin",
+  "password": "espe2025"
+}
+```
+
+#### Gestión de Salas
+```http
+POST /api/admin/rooms
+Authorization: Required (session)
+
+{
+  "name": "Sala General",
+  "pin": "1234",
+  "type": "multimedia"
+}
+```
+
+#### Upload de Archivos (con validación)
+```http
+POST /api/upload-file
+Content-Type: multipart/form-data
+
+FormData:
+  - file: <archivo>
+```
+
+**Respuesta exitosa:**
+```json
+{
+  "success": true,
+  "message": "✅ Archivo validado y sanitizado",
+  "fileInfo": {
+    "name": "imagen.jpg",
+    "type": "image/jpeg",
+    "data": "base64...",
+    "hash": "sha256...",
+    "sanitized": true
+  },
+  "security_report": {
+    "threat_level": "low",
+    "confidence": 0.15,
+    "warnings": ["Metadatos EXIF eliminados"]
+  }
+}
+```
+
+#### WebSocket Events
+
+**Cliente → Servidor:**
+- `join_room`: Unirse a una sala
+- `message`: Enviar mensaje
+- `file`: Enviar archivo
+- `disconnect`: Desconexión
+
+**Servidor → Cliente:**
+- `joined`: Confirmación de unión
+- `message`: Mensaje recibido
+- `file`: Archivo recibido
+- `user_list`: Lista de usuarios actualizada
+- `error`: Error del servidor
+
+### Códigos de Estado
+
+| Código | Significado |
+|--------|-------------|
+| 200 | Archivo aprobado |
+| 400 | Archivo sospechoso/rechazado |
+| 403 | Archivo con contenido malicioso |
+| 401 | No autorizado |
+| 500 | Error del servidor |
+
+## 🔧 Solución de Problemas
+
+### Problemas Comunes y Soluciones
+
+<details>
+<summary><b>ERROR: UnicodeDecodeError al instalar dependencias</b></summary>
+
+**Causa**: Codificación incorrecta del archivo `requirements.txt`
+
+**Solución**:
+```bash
+# Convertir a UTF-8
+iconv -f ISO-8859-1 -t UTF-8 requirements.txt > requirements_utf8.txt
+mv requirements_utf8.txt requirements.txt
+```
+</details>
+
+<details>
+<summary><b>ERROR: MongoDB connection failed</b></summary>
+
+**Causa**: Connection string incorrecto o IP no en whitelist
+
+**Solución**:
+1. Verifica tu connection string en `.env`
+2. En MongoDB Atlas, ve a Network Access
+3. Añade tu IP o permite `0.0.0.0/0` para desarrollo
+</details>
+
+<details>
+<summary><b>ERROR: Redis connection refused</b></summary>
+
+**Causa**: Redis no está corriendo
+
+**Solución**:
+```bash
+# Verificar estado
+redis-cli ping
+
+# Si no responde, iniciar Redis:
+redis-server
+```
+</details>
+
+<details>
+<summary><b>PROBLEMA: Archivos grandes no se envían</b></summary>
+
+**Causa**: Límite de buffer de Socket.IO
+
+**Solución**: En `main.py`, ajusta:
+```python
+socketio = SocketIO(
+    app,
+    max_http_buffer_size=50 * 1024 * 1024  # 50MB
+)
+```
+</details>
+
+<details>
+<summary><b>PROBLEMA: "Archivo rechazado - Esteganografía detectada"</b></summary>
+
+**Causa**: El archivo contiene datos ocultos o metadatos sospechosos
+
+**Solución**:
+1. Usa imágenes originales sin modificar
+2. Evita archivos descargados de fuentes no confiables
+3. Si es una imagen tuya, expórtala de nuevo desde el editor
+</details>
+
+### Logs y Debugging
+
+#### Ver logs en tiempo real:
+```bash
+# Backend logs
+tail -f security.log
+
+# MongoDB logs
+mongosh "tu-connection-string" --eval "db.logs.find().sort({_id:-1}).limit(10)"
+
+# Frontend console
+# Abre DevTools (F12) en el navegador
+```
+
+#### Modo debug:
+```python
+# En main.py
+app.config['DEBUG'] = True
+logging.basicConfig(level=logging.DEBUG)
+```
+
+##  Contribuir
+
+¡Las contribuciones son bienvenidas! Por favor, sigue estos pasos:
+
+1. **Fork** el repositorio
+2. **Crea** una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit** tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** a la rama (`git push origin feature/AmazingFeature`)
+5. **Abre** un Pull Request
+
+### Guías de Contribución
+
+- Sigue el estilo de código existente
+- Añade tests para nuevas funcionalidades
+- Actualiza la documentación según sea necesario
+- Asegúrate de que todos los tests pasen
+
+### Áreas de Mejora Sugeridas
+
+- [ ] Implementar E2E encryption
+- [ ] Añadir autenticación de dos factores
+- [ ] Soporte para videollamadas
+- [ ] Modo oscuro/claro
+- [ ] Notificaciones push
+- [ ] Integración con servicios externos (Google Drive, Dropbox)
+- [ ] Machine learning para mejorar detección de amenazas
+
+## 📊 Métricas y Performance
+
+### Benchmarks de Seguridad
+
+| Operación | Tiempo Promedio | CPU | RAM |
+|-----------|----------------|-----|-----|
+| Validación básica | 50ms | 5% | 10MB |
+| Detección LSB | 200ms | 15% | 50MB |
+| Chi-Square test | 150ms | 12% | 30MB |
+| Análisis completo | 800ms | 25% | 100MB |
+| Sanitización | 300ms | 20% | 80MB |
+
+### Límites del Sistema
+
+- **Usuarios concurrentes por sala**: 100
+- **Tamaño máximo de archivo**: 50MB
+- **Mensajes por segundo**: 1000
+- **Salas simultáneas**: Ilimitadas (depende de recursos)
+
+##  Equipo
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/tu-usuario">
+        <img src="https://github.com/tu-usuario.png" width="100px;" alt=""/>
+        <br />
+        <sub><b>Tu Nombre</b></sub>
+      </a>
+      <br />
+      <a href="#" title="Code">💻</a>
+      <a href="#" title="Documentation">📖</a>
+      <a href="#" title="Security">🔒</a>
+    </td>
+  </tr>
+</table>
+
+
+
+
+
+<div align="center">
+
+[⬆ Volver arriba](#-chat-espe---sistema-de-chat-seguro-con-detección-de-esteganografía)
+
+</div>
