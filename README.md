@@ -1,9 +1,9 @@
 # Chat-Software-seguro
 
-🚀 Chat para Amigos
+ Chat para Amigos
 Este es un sistema de chat en tiempo real con salas seguras, creado en Python y React. Permite a un administrador crear salas de chat protegidas por un PIN, a las que los usuarios pueden unirse con un nickname para conversar y compartir archivos.
 
-✨ Características Principales
+ Características Principales
 Panel de Administrador: Interfaz segura (admin / espe2025) para la gestión de salas.
 
 Creación de Salas: El admin puede crear salas con un nombre y un PIN.
@@ -16,7 +16,7 @@ Envío de Archivos: Las salas permiten enviar mensajes de texto y compartir arch
 
 Acceso en Red: Configurado para que otros usuarios en tu misma red WiFi puedan unirse.
 
-🛠️ Tecnologías Utilizadas
+Tecnologías Utilizadas
 Este proyecto es un monorepo dividido en dos partes:
 
 Backend (Carpeta: chat-espe-backend-main)
@@ -41,7 +41,7 @@ Axios: Para las peticiones a la API del backend.
 
 Socket.io-client: Para conectarse al servidor de WebSockets.
 
-⚙️ Requisitos Previos
+ Requisitos Previos
 Antes de empezar, asegúrate de tener instalado:
 
 Python (v3.10 o superior)
@@ -52,7 +52,7 @@ Redis: Necesitas tener el servidor de Redis instalado y ejecutándose en tu máq
 
 Cuenta de MongoDB Atlas: Necesitas una cuenta gratuita de MongoDB Atlas y un "connection string" (el enlace que empieza con mongodb+srv://...).
 
-🔌 Configuración del Proyecto
+Configuración del Proyecto
 Sigue estos pasos en orden.
 
 1. Configurar el Backend
@@ -100,10 +100,10 @@ Instala las dependencias de Node.js:
 Bash
 
 npm install
-🏃 Cómo Correr la Aplicación
+Cómo Correr la Aplicación
 Debes ejecutar ambos proyectos al mismo tiempo en dos terminales separadas.
 
-🖥️ Terminal 1: Iniciar el Backend
+ Terminal 1: Iniciar el Backend
 ¡IMPORTANTE! Asegúrate de que tu servidor de Redis esté corriendo en tu PC.
 
 Navega a la carpeta del backend y activa el entorno virtual:
@@ -119,7 +119,7 @@ Bash
 python main.py
 ¡Listo! Tu backend estará corriendo en http://localhost:5000.
 
-🖥️ Terminal 2: Iniciar el Frontend
+Terminal 2: Iniciar el Frontend
 Navega a la carpeta del frontend:
 
 Bash
@@ -132,7 +132,7 @@ Bash
 npx vite --host
 ¡Listo! La terminal te dará una URL de Network (ej: http://192.168.1.10:5173/).
 
-🔑 Acceso
+Acceso
 Para ti y otros en tu red: Abran la URL de Network (ej. http://192.168.1.10:5173/) en sus navegadores.
 
 Login de Administrador:
@@ -141,7 +141,7 @@ Usuario: admin
 
 Contraseña: espe2025
 
-⚠️ Solución de Errores Comunes
+Solución de Errores Comunes
 ERROR: UnicodeDecodeError ... charmap' codec can't decode...
 
 Causa: El archivo requirements.txt tiene una codificación incorrecta.
