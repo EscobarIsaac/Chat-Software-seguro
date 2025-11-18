@@ -257,12 +257,18 @@ def handle_join(data):
         emit('error', {'msg': 'Sala no existe'})
         return
 
+    # Detectar si el usuario tiene sesión de admin activa
+    is_admin = session.get('admin', False)
+    
     with db_lock:
         active_sessions[sid] = {
             "room_id": room_id,
             "nickname": nickname,
-            "ip": ip
+            "ip": ip,
+            "is_admin": is_admin
         }
+    
+    print(f"Usuario {nickname} unido - Es admin (sesión): {is_admin}")
 
     join_room(room_id)
     emit('joined', room=room_id, to=room_id)
@@ -285,11 +291,16 @@ def handle_message(data):
     room_id = session_data['room_id']
     username = data.get('username', session_data.get('nickname', 'Anónimo'))
 
+    is_admin = session_data.get('is_admin', False)
+    
     msg = {
         'msg': data['msg'],
         'username': username,
-        'timestamp': data['timestamp']
+        'timestamp': data['timestamp'],
+        'isAdmin': is_admin
     }
+    
+    print(f"Mensaje de {username} - isAdmin (sesión activa): {is_admin}")
     emit('message', msg, to=room_id)
 
 
@@ -305,13 +316,18 @@ def handle_file(data):
     room_id = session_data['room_id']
     username = data.get('username', session_data.get('nickname', 'Anónimo'))
 
+    is_admin = session_data.get('is_admin', False)
+    
     file_msg = {
         'file': data['file'],
         'filename': data['filename'],
         'filetype': data['filetype'],
         'username': username,
-        'timestamp': data['timestamp']
+        'timestamp': data['timestamp'],
+        'isAdmin': is_admin
     }
+    
+    print(f"Archivo de {username} - isAdmin (sesión activa): {is_admin}")
     emit('file', file_msg, to=room_id)
 
 

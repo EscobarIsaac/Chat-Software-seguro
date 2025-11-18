@@ -22,6 +22,12 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname, onLeaveRoom }) => {
     message: string;
     fileName?: string;
   }>({ show: false, success: false, message: '' });
+  const [previewFile, setPreviewFile] = useState<{
+    url: string;
+    type: string;
+    name: string;
+  } | null>(null);
+  const [pdfThumbnails, setPdfThumbnails] = useState<Map<number, string>>(new Map());
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -38,11 +44,23 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname, onLeaveRoom }) => {
     socket.on('disconnect', () => setConnected(false));
 
     socket.on('message', (msg: Omit<Message, 'type'>) => {
+      console.log('Mensaje recibido:', msg, 'isAdmin:', msg.isAdmin);
       setMessages(prev => [...prev, { ...msg, type: 'text' }]);
     });
 
     socket.on('file', (file: Omit<Message, 'type'>) => {
-      setMessages(prev => [...prev, { ...file, type: 'file' }]);
+      console.log('Archivo recibido:', file, 'isAdmin:', file.isAdmin);
+      setMessages(prev => {
+        const newMessages = [...prev, { ...file, type: 'file' }];
+        
+        // Si es PDF, generar thumbnail
+        if (file.filetype === 'application/pdf' && file.file) {
+          const messageIndex = newMessages.length - 1;
+          generatePdfThumbnail(file.file, messageIndex);
+        }
+        
+        return newMessages;
+      });
     });
 
     socket.on('user_list', setUsers);
@@ -146,6 +164,65 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname, onLeaveRoom }) => {
     }, 3000);
   };
 
+  // Función para abrir preview de archivo
+  const openFilePreview = (fileData: string, fileType: string, fileName: string) => {
+    const url = `data:${fileType};base64,${fileData}`;
+    setPreviewFile({ url, type: fileType, name: fileName });
+    console.log('Abriendo preview:', { fileType, fileName, urlLength: url.length });
+  };
+
+  // Función para cerrar preview
+  const closeFilePreview = () => {
+    setPreviewFile(null);
+  };
+
+  // Función para verificar si es imagen
+  const isImage = (mimeType: string) => {
+    return mimeType.startsWith('image/');
+  };
+
+  // Función para verificar si es PDF
+  const isPDF = (mimeType: string) => {
+    return mimeType === 'application/pdf';
+  };
+
+  // Función para generar thumbnail de PDF usando objeto embed temporal
+  const generatePdfThumbnail = useCallback(async (base64Data: string, messageIndex: number) => {
+    try {
+      // Si ya existe el thumbnail, no lo regeneramos
+      if (pdfThumbnails.has(messageIndex)) {
+        return;
+      }
+
+      const dataUrl = `data:application/pdf;base64,${base64Data}`;
+      
+      // Crear un iframe oculto para cargar el PDF
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.top = '-9999px';
+      iframe.style.width = '800px';
+      iframe.style.height = '1000px';
+      document.body.appendChild(iframe);
+      
+      iframe.src = dataUrl;
+      
+      // Esperar a que se cargue
+      await new Promise((resolve) => {
+        iframe.onload = resolve;
+        setTimeout(resolve, 2000); // Timeout de seguridad
+      });
+      
+      // Crear thumbnail usando el PDF embebido
+      // Por simplicidad, usamos la URL del PDF directamente
+      setPdfThumbnails(prev => new Map(prev).set(messageIndex, dataUrl));
+      
+      // Limpiar
+      document.body.removeChild(iframe);
+    } catch (error) {
+      console.error('Error generando thumbnail de PDF:', error);
+    }
+  }, [pdfThumbnails]);
+
   return (
     <div className="container">
       {/* Mostrar resultado de validación temporal */}
@@ -200,16 +277,60 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname, onLeaveRoom }) => {
         </div>
 
         <div className="chat-messages">
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`message ${msg.username === nickname ? 'own' : 'other'}`}
-            >
-              <div className="username">{msg.username}</div>
+          {messages.map((msg, i) => {
+            const isAdminMsg = msg.isAdmin === true;
+            console.log(`Mensaje #${i}:`, msg.username, 'isAdmin:', msg.isAdmin, 'aplicará clase:', isAdminMsg);
+            return (
+              <div
+                key={i}
+                className={`message ${msg.username === nickname ? 'own' : 'other'}`}
+              >
+                <div className={`username ${isAdminMsg ? 'admin-username' : ''}`}>
+                  {msg.username}
+                </div>
               {msg.type === 'text' ? (
                 <div style={{ marginTop: '4px' }}>{msg.msg}</div>
               ) : (
                 <div className="file-message" style={{ marginTop: '4px' }}>
+                  {/* Previsualización de imagen */}
+                  {msg.filetype && isImage(msg.filetype) && msg.file && (
+                    <div 
+                      className="file-preview-thumbnail"
+                      onClick={() => openFilePreview(msg.file!, msg.filetype!, msg.filename || 'image')}
+                    >
+                      <img 
+                        src={`data:${msg.filetype};base64,${msg.file}`}
+                        alt={msg.filename}
+                        className="preview-image"
+                      />
+                      <div className="preview-overlay">
+                        <span>👁️ Ver imagen completa</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Previsualización de PDF */}
+                  {msg.filetype && isPDF(msg.filetype) && msg.file && (
+                    <div 
+                      className="file-preview-thumbnail pdf-preview-embed"
+                      onClick={() => openFilePreview(msg.file!, msg.filetype!, msg.filename || 'document.pdf')}
+                    >
+                      <div className="pdf-embed-container">
+                        <iframe
+                          src={`data:${msg.filetype};base64,${msg.file}#page=1&zoom=50&toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                          className="pdf-embed-preview"
+                          title={`Preview: ${msg.filename}`}
+                        />
+                        <div className="pdf-page-indicator">
+                          <span>📄 {msg.filename}</span>
+                        </div>
+                      </div>
+                      <div className="preview-overlay">
+                        <span>👁️ Ver PDF completo</span>
+                      </div>
+                    </div>
+                  )}
+                  
                   <span className="file-icon">📎</span>
                   <a
                     href={`data:${msg.filetype};base64,${msg.file}`}
@@ -230,7 +351,8 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname, onLeaveRoom }) => {
                 })}
               </div>
             </div>
-          ))}
+          );
+          })}
           <div ref={messagesEndRef} />
         </div>
 
@@ -271,6 +393,45 @@ const ChatRoom: React.FC<Props> = ({ roomId, pin, nickname, onLeaveRoom }) => {
           </div>
         </div>
       </div>
+
+      {/* Modal de previsualización */}
+      {previewFile && (
+        <div className="preview-modal" onClick={closeFilePreview}>
+          <div className="preview-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="preview-close-btn" onClick={closeFilePreview}>
+              ✕
+            </button>
+            <div className="preview-header">
+              <h3>{previewFile.name}</h3>
+              <a
+                href={previewFile.url}
+                download={previewFile.name}
+                className="preview-download-btn"
+              >
+                ⬇️ Descargar
+              </a>
+            </div>
+            <div className="preview-body">
+              {isImage(previewFile.type) ? (
+                <img src={previewFile.url} alt={previewFile.name} className="preview-full-image" />
+              ) : isPDF(previewFile.type) ? (
+                <iframe
+                  src={`${previewFile.url}#toolbar=1&navpanes=1&scrollbar=1`}
+                  title={previewFile.name}
+                  className="preview-pdf-iframe"
+                />
+              ) : (
+                <div className="preview-unsupported">
+                  <p>Vista previa no disponible para este tipo de archivo</p>
+                  <a href={previewFile.url} download={previewFile.name} className="preview-download-link">
+                    Descargar archivo
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -7,6 +7,7 @@ export type Message = {
   file?: string;         // Base64 del archivo
   filename?: string;
   filetype?: string;
+  isAdmin?: boolean;     // Indica si el mensaje es de un admin
 };
 
 // Define el formulario de creación de sala
