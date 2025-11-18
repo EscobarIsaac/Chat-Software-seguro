@@ -1,5 +1,11 @@
 import React, { useState, useRef } from 'react';
 
+interface SecurityReport {
+  threat_level: string;
+  confidence: number;
+  warnings?: string[];
+}
+
 interface FileValidationResult {
   isValid: boolean;
   errors: string[];
@@ -9,7 +15,11 @@ interface FileValidationResult {
     type: string;
     data?: string;
     hash?: string;
+    category?: string;
+    sanitized?: boolean;
   };
+  securityReport?: SecurityReport;
+  warnings?: string[];
 }
 
 interface SecureFileUploadProps {
@@ -120,19 +130,23 @@ const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
           isValid: true,
           errors: [],
           fileInfo: {
-            name: result.filename,
-            size: result.size,
-            type: result.mime_type,
-            data: result.file_data,
-            hash: result.hash
-          }
+            name: result.fileInfo?.name || result.filename,
+            size: result.fileInfo?.size || result.size,
+            type: result.fileInfo?.type || result.mime_type,
+            data: result.fileInfo?.data || result.file_data,
+            hash: result.fileInfo?.hash || result.hash,
+            category: result.fileInfo?.category,
+            sanitized: result.fileInfo?.sanitized
+          },
+          securityReport: result.security_report,
+          warnings: result.warnings
         };
         setValidationResult(successResult);
         onFileValidated(file, successResult);
       } else {
         const errorResult: FileValidationResult = {
           isValid: false,
-          errors: result.details || [result.error],
+          errors: result.details || [result.error || result.message],
           fileInfo: clientValidation.fileInfo
         };
         setValidationResult(errorResult);
@@ -168,6 +182,28 @@ const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const getThreatLevelIcon = (level: string): string => {
+    switch (level) {
+      case 'critical': return '🚫';
+      case 'high': return '❌';
+      case 'medium': return '⚠️';
+      case 'low': return '🔍';
+      case 'safe': return '✅';
+      default: return '❓';
+    }
+  };
+
+  const getThreatLevelText = (level: string): string => {
+    switch (level) {
+      case 'critical': return 'AMENAZA CRÍTICA';
+      case 'high': return 'Alto Riesgo';
+      case 'medium': return 'Riesgo Medio';
+      case 'low': return 'Riesgo Bajo';
+      case 'safe': return 'Seguro';
+      default: return 'Desconocido';
+    }
+  };
+
   return (
     <div className="secure-file-upload">
       <div className="upload-area">
@@ -185,23 +221,62 @@ const SecureFileUpload: React.FC<SecureFileUploadProps> = ({
           disabled={uploading || disabled}
           className="upload-button"
         >
-          {uploading ? '🔍 Validando archivo...' : '📎 Seleccionar archivo multimedia'}
+          {uploading ? '🔍 Análisis de seguridad en progreso...' : '🛡️ Subir archivo (Análisis de seguridad)'}
         </button>
+        
+        <div className="security-info">
+          <small>
+            ⚠️ Sistema avanzado: Detección de steganografía, malware y anomalías
+          </small>
+        </div>
       </div>
 
       {validationResult && (
         <div className={`validation-result ${validationResult.isValid ? 'success' : 'error'}`}>
           {validationResult.isValid ? (
             <div className="success-message">
-              <div className="success-header">✅ Archivo validado correctamente</div>
+              <div className="success-header">
+                ✅ Archivo validado y seguro
+                {validationResult.fileInfo?.sanitized && <span className="sanitized-badge">✨ Sanitizado</span>}
+              </div>
+              
               <div className="file-info">
                 <p><strong>Nombre:</strong> {validationResult.fileInfo?.name}</p>
                 <p><strong>Tamaño:</strong> {formatFileSize(validationResult.fileInfo?.size || 0)}</p>
                 <p><strong>Tipo:</strong> {validationResult.fileInfo?.type}</p>
+                {validationResult.fileInfo?.category && (
+                  <p><strong>Categoría:</strong> {validationResult.fileInfo.category}</p>
+                )}
                 {validationResult.fileInfo?.hash && (
                   <p><strong>Hash:</strong> <code>{validationResult.fileInfo.hash.substring(0, 16)}...</code></p>
                 )}
               </div>
+              
+              {validationResult.securityReport && (
+                <div className="security-report">
+                  <div className="security-header">🛡️ Análisis de Seguridad</div>
+                  <div className="security-status">
+                    <span className={`threat-level ${validationResult.securityReport.threat_level}`}>
+                      {getThreatLevelIcon(validationResult.securityReport.threat_level)} 
+                      {getThreatLevelText(validationResult.securityReport.threat_level)}
+                    </span>
+                    {validationResult.securityReport.confidence > 0 && (
+                      <span className="confidence">Confianza: {(validationResult.securityReport.confidence * 100).toFixed(0)}%</span>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {validationResult.warnings && validationResult.warnings.length > 0 && (
+                <div className="warnings">
+                  <div className="warnings-header">⚠️ Advertencias:</div>
+                  <ul>
+                    {validationResult.warnings.slice(0, 3).map((warning, idx) => (
+                      <li key={idx}>{warning}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           ) : (
             <div className="error-message">

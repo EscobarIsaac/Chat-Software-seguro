@@ -1,0 +1,345 @@
+/* Estilos para el sistema de carga segura de archivos */
+
+/* Contenedor principal */
+.secure-file-upload {
+  margin: 16px 0;
+  padding: 20px;
+  border: 2px dashed #4a90e2;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8faff 0%, #e8f4fd 100%);
+  transition: all 0.3s ease;
+}
+
+.secure-file-upload:hover {
+  border-color: #2196f3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+}
+
+/* Área de carga */
+.upload-area {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.upload-button {
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(74, 144, 226, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #357abd, #2a5f94);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+}
+
+.upload-button:disabled {
+  background: linear-gradient(135deg, #bbb, #999);
+  cursor: not-allowed;
+  transform: none;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.security-info {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.security-info small {
+  color: #666;
+  font-size: 12px;
+  background: rgba(255, 193, 7, 0.1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  display: inline-block;
+}
+
+/* Resultados de validación */
+.validation-result {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.validation-result.success {
+  background: linear-gradient(135deg, #e8f5e8, #d4edda);
+  border: 2px solid #28a745;
+}
+
+.validation-result.error {
+  background: linear-gradient(135deg, #ffebee, #f8d7da);
+  border: 2px solid #dc3545;
+}
+
+/* Headers */
+.success-header, .error-header {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.success-header {
+  color: #155724;
+}
+
+.error-header {
+  color: #721c24;
+}
+
+.sanitized-badge {
+  background: rgba(16, 185, 129, 0.2);
+  color: #059669;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: normal;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Información del archivo */
+.file-info {
+  background: rgba(255, 255, 255, 0.7);
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  backdrop-filter: blur(5px);
+}
+
+.file-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.file-info code {
+  background: #f1f3f4;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 11px;
+  color: #d73a49;
+}
+
+/* Reporte de seguridad */
+.security-report {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.security-header {
+  font-weight: bold;
+  color: #4a90e2;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.security-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.threat-level {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.threat-level.safe {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.threat-level.low {
+  background: rgba(23, 162, 184, 0.1);
+  color: #17a2b8;
+  border: 1px solid rgba(23, 162, 184, 0.3);
+}
+
+.threat-level.medium {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.threat-level.high {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.threat-level.critical {
+  background: rgba(108, 117, 125, 0.1);
+  color: #6c757d;
+  border: 1px solid rgba(108, 117, 125, 0.3);
+}
+
+.confidence {
+  font-size: 12px;
+  color: #666;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Advertencias */
+.warnings {
+  background: rgba(255, 193, 7, 0.1);
+  padding: 12px;
+  border-radius: 6px;
+  margin: 12px 0;
+  border-left: 4px solid #ffc107;
+}
+
+.warnings-header {
+  font-weight: bold;
+  color: #856404;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.warnings ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 12px;
+  color: #856404;
+}
+
+.warnings li {
+  margin: 4px 0;
+}
+
+/* Errores */
+.error-list {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 16px 16px 16px 32px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.error-list li {
+  margin: 8px 0;
+  color: #721c24;
+  font-size: 14px;
+  list-style-type: disc;
+}
+
+/* Botón de reintento */
+.retry-button {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+}
+
+.retry-button:hover {
+  background: linear-gradient(135deg, #c82333, #a71e2a);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .secure-file-upload {
+    margin: 12px 0;
+    padding: 16px;
+  }
+  
+  .upload-button {
+    font-size: 14px;
+    padding: 12px 24px;
+  }
+  
+  .security-status {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .success-header, .error-header {
+    font-size: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Estados de carga */
+.upload-button:disabled::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Efectos hover adicionales */
+.file-info:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+.security-report:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transition: all 0.2s ease;
+}

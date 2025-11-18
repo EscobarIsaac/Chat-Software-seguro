@@ -16,6 +16,9 @@ node_modules/
 __pycache__/
 tests/
 venv/
+2025-11-17-ZAP-Report-/
+.sonar/
+tools/
 
 # Archivos del IDE
 .vscode/
@@ -25,7 +28,13 @@ venv/
 
 # Archivos del sistema
 .DS_Store
+2025-11-17-ZAP-Report-.html
 Thumbs.db
+images.jfif.bmp
+image_valida1.jpeg
+image_valida2.png
+Logo_ESPEOk.png
+MEJORAS_SEGURIDAD.md
 
 # Archivos de distribución
 dist/
