@@ -549,12 +549,14 @@ logging.basicConfig(level=logging.DEBUG)
       <a href="https://github.com/tu-usuario">
         <img src="https://github.com/tu-usuario.png" width="100px;" alt=""/>
         <br />
-        <sub><b>Tu Nombre</b></sub>
+        <sub><b>Alexis Chimba</b></sub>
+               <sub><b>Issac Escobar</b></sub>
+               <sub><b>Richard Gualotuña</b></sub>
       </a>
       <br />
-      <a href="#" title="Code">💻</a>
-      <a href="#" title="Documentation">📖</a>
-      <a href="#" title="Security">🔒</a>
+      <a href="#" title="Code"></a>
+      <a href="#" title="Documentation"></a>
+      <a href="#" title="Security"></a>
     </td>
   </tr>
 </table>
