@@ -1,0 +1,33 @@
+# Archivos de prueba de seguridad
+validation_test_files/
+
+# Archivos temporales del sistema
+*.tmp
+*.temp
+
+# Archivos de configuración local
+*.local
+
+# Logs del sistema
+*.log
+
+# Directorios de dependencias
+node_modules/
+__pycache__/
+tests/
+venv/
+
+# Archivos del IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de distribución
+dist/
+build/
+*.pyc
