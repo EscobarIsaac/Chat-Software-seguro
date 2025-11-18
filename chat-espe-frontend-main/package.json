@@ -4,15 +4,19 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "vite --mode development",
+    "start": "vite --mode production --host",
+    "build": "tsc -b && vite build --mode production",
+    "build:dev": "tsc -b && vite build --mode development",
+    "preview": "vite preview --mode production",
+    "lint": "eslint ."
   },
   "dependencies": {
+    "@types/react-router-dom": "^5.3.3",
     "axios": "^1.13.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.6",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {

@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Test files directory
+validation_test_files/
