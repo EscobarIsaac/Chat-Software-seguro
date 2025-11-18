@@ -29,7 +29,7 @@ const ChatRoomPage: React.FC = () => {
       <div className="container">
         <div className="card">
           <h2>Error</h2>
-          <p>No se encontraron los datos de la sala. Regresando al inicio...</p>
+          <p>No se encontraron los datos de la sala. Regresando al inicio</p>
         </div>
       </div>
     );
