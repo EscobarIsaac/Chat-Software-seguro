@@ -1,0 +1,72 @@
+# === Generales del proyecto ===
+# Archivos y carpetas de sistema / editor
+.vscode/
+.idea/
+*.code-workspace
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.orig
+
+# === Python (Biometrico, backend del chat, scripts) ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+
+# Entornos virtuales
+.venv/
+venv/
+ENV/
+env/
+
+# Bases de datos locales
+*.db
+*.sqlite3
+instance/
+
+# Archivos de entorno / secretos
+#.env
+#.env.*
+#*.env
+
+# === Node / React (frontend del chat) ===
+node_modules/
+
+# Builds
+build/
+dist/
+.out/
+coverage/
+*.tsbuildinfo
+
+# Herramientas
+.npm/
+.yarn/
+.pnp.*
+
+# === Otros ===
+# Archivos de sistema de control de versiones
+.svn/
+.hg/
+
+# Salidas de herramientas de seguridad/CI (si se generan en local)
+scan-reports/
+security-reports/

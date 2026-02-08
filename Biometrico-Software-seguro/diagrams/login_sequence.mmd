@@ -1,0 +1,25 @@
+%% Diagrama inspirado en la figura proporcionada
+flowchart TD
+    A[Inicio: Usuario accede a la aplicación]
+    B{¿Intento de login?}
+    C[Verificar biometría del dispositivo]
+    D{¿Verificación exitosa?}
+    E{Determinar rol}
+    F[Dashboard Admin: bienvenida + gestión]
+    G[Operaciones Admin: registrar, validar, asignar roles]
+    H[Dashboard Cliente: vista/edición perfil]
+    I[Operaciones Cliente: ver perfil, actualizar datos no sensibles]
+    J[Mostrar página de inicio o error]
+    K[Intentos limitados → bloqueo temporal]
+    L[Logout seguro: expirar sesión]
+
+    A --> B
+    B -- No --> J
+    B -- Sí --> C
+    C --> D
+    D -- No --> K
+    D -- Sí --> E
+    E -- Admin --> F --> G --> L
+    E -- Cliente --> H --> I --> L
+    K --> L
+    J --> A

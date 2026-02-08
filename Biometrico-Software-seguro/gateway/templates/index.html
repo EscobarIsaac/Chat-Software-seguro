@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Gateway Biométrico Seguro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .shell {
+            width: min(960px, 95vw);
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 30px 80px rgba(15, 23, 42, 0.8);
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 1.9rem;
+        }
+        p.lead {
+            margin-bottom: 24px;
+            color: #94a3b8;
+        }
+        form {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-size: 0.85rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #cbd5f5;
+        }
+        input, select {
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 12px;
+        }
+        button {
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #0f172a;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: #38bdf8;
+        }
+        .btn-outline {
+            background: transparent;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+        }
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+        .panel {
+            background: #0b1120;
+            border: 1px solid #1f2937;
+            border-radius: 14px;
+            padding: 20px;
+        }
+        #status {
+            min-height: 40px;
+            margin-bottom: 16px;
+        }
+        .status-msg {
+            padding: 12px;
+            border-radius: 10px;
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+        .status-msg.error {
+            border-color: #f87171;
+            color: #fecaca;
+        }
+        .status-msg.success {
+            border-color: #4ade80;
+            color: #dcfce7;
+        }
+        ul#audit-log {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        ul#audit-log li {
+            font-size: 0.85rem;
+            border-bottom: 1px solid #1f2937;
+            padding: 8px 0;
+        }
+        code {
+            font-size: 0.85rem;
+            background: #1f2937;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+        .approval-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.92);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .approval-overlay.hidden {
+            display: none;
+        }
+        .approval-card {
+            width: min(520px, 92vw);
+            border-radius: 18px;
+            border: 1px solid #1f2937;
+            background: #0b1120;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.9);
+        }
+        .approval-card h2 {
+            margin-bottom: 12px;
+            color: #38bdf8;
+        }
+        .approval-card p {
+            margin: 6px 0;
+            color: #cbd5f5;
+        }
+        .approval-details {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        .approval-spinner {
+            width: 56px;
+            height: 56px;
+            border-radius: 999px;
+            border: 5px solid rgba(59, 130, 246, 0.25);
+            border-top-color: #38bdf8;
+            margin: 0 auto 18px;
+            animation: spin 1s linear infinite;
+        }
+        .approval-overlay[data-state="approved"] .approval-card {
+            border-color: #4ade80;
+        }
+        .approval-overlay[data-state="rejected"] .approval-card,
+        .approval-overlay[data-state="error"] .approval-card {
+            border-color: #f87171;
+        }
+        .overlay-close.hidden {
+            display: none;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .processing-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.94);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1200;
+        }
+        .processing-overlay.visible {
+            display: flex;
+        }
+        .processing-card {
+            width: min(360px, 90vw);
+            border-radius: 16px;
+            border: 1px solid #1f2937;
+            background: #020617;
+            padding: 24px 24px 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.9);
+        }
+        .processing-spinner {
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            border: 4px solid rgba(59, 130, 246, 0.3);
+            border-top-color: #38bdf8;
+            margin: 0 auto 14px;
+            animation: spin 0.9s linear infinite;
+        }
+        .processing-title {
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .processing-text {
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <h1>Gateway Biométrico Seguro</h1>
+        <p class="lead">Primera capa del ecosistema. Aquí se valida tu dispositivo (WebAuthn/Passkeys), se genera un token firmado y se habilita el acceso al chat seguro con respaldo de la IA de vulnerabilidades.</p>
+        <p class="lead" style="font-size:0.95rem;color:#7dd3fc;">Windows Hello con lector de huella está soportado: selecciona <em>"Usar Windows Hello o un dispositivo externo"</em> cuando el navegador solicite la credencial biométrica.</p>
+
+        <div id="status"></div>
+
+        <div id="approval-overlay" class="approval-overlay hidden" data-state="pending">
+            <div class="approval-card">
+                <div id="approval-spinner" class="approval-spinner"></div>
+                <h2 id="approval-title">Esperando confirmación...</h2>
+                <p id="approval-message">Hemos enviado tu solicitud al administrador.</p>
+                <p id="approval-details" class="approval-details"></p>
+                <div class="overlay-actions" style="margin-top:18px;display:flex;gap:12px;justify-content:center;">
+                    <button id="approval-continue" type="button" class="btn-primary overlay-continue hidden">Continuar</button>
+                    <button id="approval-close" type="button" class="btn-outline overlay-close hidden">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+            <div class="panel" id="register-panel">
+                <h2>Registro de dispositivo</h2>
+                <form id="register-form">
+                    <div>
+                        <label for="reg-username">Usuario</label>
+                        <input id="reg-username" required placeholder="ej. admin" />
+                    </div>
+                    <div>
+                        <label for="reg-display">Nombre para mostrar</label>
+                        <input id="reg-display" placeholder="Nombre completo" />
+                    </div>
+                    <div>
+                        <label for="reg-role">Rol</label>
+                        <select id="reg-role">
+                            <option value="admin">Admin</option>
+                            <option value="cliente" selected>Cliente</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" type="submit">Registrar biometría</button>
+                </form>
+            </div>
+
+            <div class="panel" id="login-panel">
+                <h2>Inicio de sesión biométrica</h2>
+                <form id="login-form">
+                    <div>
+                        <label for="login-username">Usuario</label>
+                        <input id="login-username" required placeholder="ej. admin" />
+                    </div>
+                    <button class="btn-primary" type="submit">Iniciar sesión con biometría</button>
+                </form>
+                <p id="login-error" style="color:#fca5a5;font-size:0.9rem;min-height:18px;margin:8px 0 0 0;"></p>
+                <p style="font-size:0.85rem;color:#94a3b8;margin-top:10px;">
+                    Si tu dispositivo ya está registrado, este formulario abrirá Windows Hello para autenticarte.
+                    Si no existe una credencial para el usuario indicado, se iniciará automáticamente el flujo de registro.
+                </p>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-top: 24px;">
+            <h3>Eventos recientes</h3>
+            <ul id="audit-log"></ul>
+        </div>
+    </div>
+
+    <div id="processing-overlay" class="processing-overlay" aria-hidden="true">
+        <div class="processing-card">
+            <div class="processing-spinner"></div>
+            <div id="processing-title" class="processing-title">Procesando...</div>
+            <p id="processing-text" class="processing-text">No cierres esta ventana ni pulses otros botones.</p>
+        </div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            rpId: "{{ rp_id }}",
+            origin: "{{ origin }}",
+            chatUrl: "{{ chat_url }}"
+        };
+
+        const params = new URLSearchParams(window.location.search);
+        let AUTO_FLOW = params.get('flow');
+        const AUTO_USERNAME = (params.get('username') || '').trim();
+        const AUTO_DISPLAY = (params.get('display') || AUTO_USERNAME).trim();
+        const AUTO_ROLE = params.get('role') || 'cliente';
+        const SHOULD_CLOSE = params.get('close') === '1';
+        const PARENT_ORIGIN = params.get('origin') || new URL(CONFIG.chatUrl).origin;
+        const LOGIN_ONLY = params.get('login_only') === '1';
+        const REGISTER_ONLY = params.get('register_only') === '1';
+        let approvalEventSource = null;
+        let approvalFallbackTimer = null;
+        let currentApprovalContext = null;
+
+        const overlayRefs = {
+            container: document.getElementById('approval-overlay'),
+            spinner: document.getElementById('approval-spinner'),
+            title: document.getElementById('approval-title'),
+            message: document.getElementById('approval-message'),
+            details: document.getElementById('approval-details'),
+            continueBtn: document.getElementById('approval-continue'),
+            closeBtn: document.getElementById('approval-close')
+        };
+
+        const processingOverlay = document.getElementById('processing-overlay');
+        const processingTitle = document.getElementById('processing-title');
+        const processingText = document.getElementById('processing-text');
+
+        function updateOverlay(state, content = {}) {
+            if (!overlayRefs.container) return;
+            overlayRefs.container.dataset.state = state;
+            overlayRefs.container.classList.remove('hidden');
+            overlayRefs.title.textContent = content.title || '';
+            overlayRefs.message.textContent = content.message || '';
+            overlayRefs.details.textContent = content.details || '';
+            const isPending = state === 'pending';
+            const isApproved = state === 'approved';
+            overlayRefs.spinner.style.display = isPending ? 'block' : 'none';
+            if (overlayRefs.continueBtn) {
+                overlayRefs.continueBtn.classList.toggle('hidden', !isApproved);
+            }
+            if (overlayRefs.closeBtn) {
+                overlayRefs.closeBtn.classList.toggle('hidden', isPending);
+            }
+        }
+
+        function hideApprovalOverlay() {
+            if (!overlayRefs.container) return;
+            overlayRefs.container.classList.add('hidden');
+            overlayRefs.container.dataset.state = 'pending';
+            overlayRefs.spinner.style.display = 'block';
+            overlayRefs.closeBtn.classList.add('hidden');
+        }
+
+        if (overlayRefs.closeBtn) {
+            overlayRefs.closeBtn.addEventListener('click', () => {
+                hideApprovalOverlay();
+            });
+        }
+
+        function describeContext(context) {
+            if (!context) return '';
+            return `Usuario: ${context.username} · Rol: ${context.role}`;
+        }
+
+        function showProcessing(title, text) {
+            if (!processingOverlay) return;
+            if (processingTitle) processingTitle.textContent = title || 'Procesando...';
+            if (processingText) processingText.textContent = text || 'No cierres esta ventana ni pulses otros botones.';
+            processingOverlay.classList.add('visible');
+        }
+
+        function hideProcessing() {
+            if (!processingOverlay) return;
+            processingOverlay.classList.remove('visible');
+        }
+
+        function showPendingOverlay(context) {
+            updateOverlay('pending', {
+                title: 'Esperando confirmación del administrador',
+                message: 'El equipo de seguridad revisará tu solicitud y te notificaremos en cuanto la autoricen.',
+                details: describeContext(context)
+            });
+        }
+
+        function showApprovedOverlay(context) {
+            updateOverlay('approved', {
+                title: '¡Autorizado!',
+                message: 'Tu solicitud fue aprobada. Haz clic en "Continuar" para abrir Windows Hello y completar el registro.',
+                details: describeContext(context)
+            });
+        }
+
+        function showRejectedOverlay(context, reason) {
+            updateOverlay('rejected', {
+                title: 'Solicitud rechazada',
+                message: reason || 'El administrador rechazó esta solicitud.',
+                details: describeContext(context)
+            });
+        }
+
+        function showErrorOverlay(message) {
+            updateOverlay('error', {
+                title: 'Solicitud detenida',
+                message: message || 'No se pudo continuar con el registro.',
+                details: ''
+            });
+        }
+
+        function bufferDecode(value) {
+            const padding = '='.repeat((4 - value.length % 4) % 4);
+            const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray.buffer;
+        }
+
+        function bufferEncode(value) {
+            const bytes = new Uint8Array(value);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        }
+
+        function renderStatus(message, type = 'info') {
+            const box = document.getElementById('status');
+            box.innerHTML = `<div class="status-msg ${type}">${message}</div>`;
+        }
+
+        function isPopupMode() {
+            return SHOULD_CLOSE && window.opener;
+        }
+
+        function notifyParent(result, flow, username) {
+            if (!isPopupMode() || !result.token) {
+                return false;
+            }
+            try {
+                console.log('[gateway] Enviando biometric-token al padre', {
+                    origin: PARENT_ORIGIN,
+                    flow,
+                    username,
+                    hasRedirect: !!result.redirect
+                });
+                window.opener.postMessage({
+                    type: 'biometric-token',
+                    flow,
+                    username,
+                    token: result.token,
+                    redirect: result.redirect || null,
+                    timestamp: Date.now()
+                }, PARENT_ORIGIN);
+            } catch (err) {
+                console.error('No se pudo enviar el token al padre:', err);
+            }
+            setTimeout(() => window.close(), 600);
+            return true;
+        }
+
+        function closeApprovalStream() {
+            if (approvalEventSource) {
+                approvalEventSource.close();
+                approvalEventSource = null;
+            }
+            if (approvalFallbackTimer) {
+                clearInterval(approvalFallbackTimer);
+                approvalFallbackTimer = null;
+            }
+        }
+
+        function watchApproval(requestId, context) {
+            closeApprovalStream();
+            currentApprovalContext = context;
+            showPendingOverlay(context);
+            approvalEventSource = new EventSource(`/api/biometric/register/stream/${requestId}`);
+
+            const handleUpdate = (payload) => {
+                const status = payload.status;
+                if (status === 'pending') {
+                    renderStatus('Solicitud enviada. Esperando autorización del administrador...', 'info');
+                    showPendingOverlay(context);
+                    return;
+                }
+                if (status === 'approved') {
+                    const fullContext = { ...context, requestId };
+                    currentApprovalContext = fullContext;
+                    renderStatus('Autorizado ✅ Haz clic en "Continuar" para abrir Windows Hello.', 'success');
+                    showApprovedOverlay(context);
+                    closeApprovalStream();
+
+                    if (overlayRefs.continueBtn) {
+                        overlayRefs.continueBtn.onclick = async () => {
+                            try {
+                                overlayRefs.continueBtn.disabled = true;
+                                await performWebAuthnRegistration(fullContext);
+                            } catch (err) {
+                                console.error('Error en registro WebAuthn', err);
+                                showErrorOverlay('Windows Hello no se pudo completar. Intenta nuevamente.');
+                                renderStatus('No se pudo completar el registro después de la aprobación.', 'error');
+                            } finally {
+                                overlayRefs.continueBtn.disabled = false;
+                            }
+                        };
+                    }
+                    return;
+                }
+                if (status === 'rejected') {
+                    renderStatus('El administrador rechazó la solicitud.', 'error');
+                    showRejectedOverlay(context);
+                    closeApprovalStream();
+                    currentApprovalContext = null;
+                    return;
+                }
+            };
+
+            approvalEventSource.addEventListener('update', event => {
+                try {
+                    const data = JSON.parse(event.data || '{}');
+                    handleUpdate(data);
+                } catch (err) {
+                    console.warn('No se pudo parsear el evento SSE', err);
+                }
+            });
+            approvalEventSource.addEventListener('timeout', () => {
+                renderStatus('La solicitud expiró. Intenta nuevamente.', 'error');
+                showErrorOverlay('La solicitud expiró antes de recibir respuesta.');
+                closeApprovalStream();
+                currentApprovalContext = null;
+            });
+            approvalEventSource.onerror = () => {
+                renderStatus('Perdimos conexión con el gateway. Reintentando...', 'error');
+            };
+
+            approvalFallbackTimer = setInterval(async () => {
+                try {
+                    const resp = await fetch(`/api/biometric/register/status/${requestId}`);
+                    if (!resp.ok) return;
+                    const data = await resp.json();
+                    if (data.status && data.status !== 'pending') {
+                        handleUpdate(data);
+                    }
+                } catch (err) {
+                    console.warn('Fallback de estado falló', err);
+                }
+            }, 5000);
+        }
+
+        async function requestRegistration(evt, overrides = {}) {
+            if (evt) evt.preventDefault();
+            if (!window.PublicKeyCredential) {
+                renderStatus('Este navegador no soporta WebAuthn/Passkeys.', 'error');
+                return;
+            }
+            closeApprovalStream();
+            const formUsername = document.getElementById('reg-username').value.trim();
+            const usernameSource = typeof overrides.username !== 'undefined' ? overrides.username : formUsername;
+            const username = (usernameSource || '').trim();
+            if (!username) {
+                renderStatus('Debes indicar un usuario para registrar.', 'error');
+                return;
+            }
+            const formDisplay = document.getElementById('reg-display').value.trim();
+            const displaySource = typeof overrides.displayName !== 'undefined' ? overrides.displayName : (formDisplay || username);
+            const displayName = (displaySource || username).trim();
+            const role = typeof overrides.role !== 'undefined' ? overrides.role : document.getElementById('reg-role').value;
+
+            try {
+                showProcessing('Preparando registro biométrico...', 'Validando usuario y generando la solicitud de aprobación.');
+                renderStatus('Solicitando autorización del administrador...', 'info');
+                const response = await fetch('/api/biometric/register/request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, displayName, role })
+                });
+                const payload = await response.json();
+                if (!response.ok) {
+                    renderStatus(payload.error || 'No se pudo crear la solicitud.', 'error');
+                    hideProcessing();
+                    hideApprovalOverlay();
+                    currentApprovalContext = null;
+                    return;
+                }
+                const approvalContext = { username, displayName, role };
+                currentApprovalContext = approvalContext;
+                renderStatus('Solicitud enviada. Esperando aprobación...', 'info');
+                showPendingOverlay(approvalContext);
+                hideProcessing();
+                watchApproval(payload.requestId, approvalContext);
+            } catch (err) {
+                console.error(err);
+                renderStatus('Error al solicitar la autorización.', 'error');
+                showErrorOverlay('No se pudo contactar al servidor para solicitar la autorización.');
+                currentApprovalContext = null;
+                hideProcessing();
+            }
+        }
+
+        async function performWebAuthnRegistration({ username, displayName, role, requestId }) {
+            try {
+                showProcessing('Abre Windows Hello...', 'Se iniciará la ventana de registro biométrico. Sigue las instrucciones del sistema.');
+                const optionsResp = await fetch('/api/biometric/register/options', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, displayName, role, approvalRequestId: requestId })
+                });
+                const responseJson = await optionsResp.json();
+                if (!optionsResp.ok) {
+                    renderStatus(responseJson.error || 'No se pudo iniciar el registro.', 'error');
+                    showErrorOverlay(responseJson.error || 'No se pudo iniciar el registro WebAuthn.');
+                    currentApprovalContext = null;
+                    hideProcessing();
+                    return;
+                }
+                const { options } = responseJson;
+                options.challenge = bufferDecode(options.challenge);
+                options.user.id = bufferDecode(options.user.id);
+                const credential = await navigator.credentials.create({ publicKey: options });
+                showProcessing('Verificando credencial biométrica...', 'Estamos validando tu dispositivo y generando un token seguro.');
+                const verified = await fetch('/api/biometric/register/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username,
+                        approvalRequestId: requestId,
+                        credential: {
+                            id: credential.id,
+                            rawId: bufferEncode(credential.rawId),
+                            response: {
+                                clientDataJSON: bufferEncode(credential.response.clientDataJSON),
+                                attestationObject: bufferEncode(credential.response.attestationObject)
+                            },
+                            type: credential.type,
+                            transports: credential.response.getTransports ? credential.response.getTransports() : []
+                        }
+                    })
+                });
+                const result = await verified.json();
+                if (result.verified) {
+                    renderStatus('Registro completado. Token emitido. Redirige al chat cuando estés listo.', 'success');
+                    if (!notifyParent(result, 'registration', username) && result.redirect) {
+                        setTimeout(() => window.location.href = result.redirect, 1200);
+                    }
+                    hideApprovalOverlay();
+                    currentApprovalContext = null;
+                } else {
+                    renderStatus(result.error || 'No se pudo verificar la credencial.', 'error');
+                    showErrorOverlay(result.error || 'No se pudo verificar la credencial.');
+                    hideApprovalOverlay();
+                    currentApprovalContext = null;
+                }
+                refreshAudit();
+            } catch (err) {
+                console.error(err);
+                renderStatus('Error durante el registro biométrico.', 'error');
+                showErrorOverlay('Ocurrió un error durante el proceso biométrico.');
+                currentApprovalContext = null;
+                hideApprovalOverlay();
+            } finally {
+                hideProcessing();
+            }
+        }
+
+        async function beginLogin(evt, overrideUsername) {
+            if (evt) evt.preventDefault();
+            const formUsername = document.getElementById('login-username').value.trim();
+            const loginSource = typeof overrideUsername !== 'undefined' ? overrideUsername : formUsername;
+            const username = (loginSource || '').trim();
+            const loginError = document.getElementById('login-error');
+            if (loginError) loginError.textContent = '';
+            if (!username) {
+                renderStatus('Debes indicar un usuario para autenticarte.', 'error');
+                if (loginError) loginError.textContent = 'Debes indicar un usuario.';
+                return;
+            }
+            try {
+                showProcessing('Preparando inicio de sesión...', 'Validando usuario y obteniendo opciones de autenticación.');
+                const optionsResp = await fetch('/api/biometric/login/options', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                const payload = await optionsResp.json();
+                if (!optionsResp.ok || payload.error) {
+                    const errMsg = payload.error || 'No se pudo iniciar el login biométrico.';
+                    if (payload.error === 'sin credenciales registradas' || payload.error === 'usuario no registrado') {
+                        // No forzar registro automático: solo mostrar mensaje
+                        renderStatus('Usuario no registrado. Solicita registro al administrador.', 'error');
+                        if (loginError) loginError.textContent = 'Usuario no registrado en el gateway.';
+                        hideProcessing();
+                        return;
+                    }
+                    renderStatus(errMsg, 'error');
+                    if (loginError) loginError.textContent = errMsg;
+                    hideProcessing();
+                    return;
+                }
+                const { options } = payload;
+                options.challenge = bufferDecode(options.challenge);
+                options.allowCredentials = options.allowCredentials.map(item => ({
+                    ...item,
+                    id: bufferDecode(item.id)
+                }));
+                showProcessing('Abre Windows Hello...', 'Se iniciará la ventana de autenticación biométrica. Sigue las instrucciones.');
+                const assertion = await navigator.credentials.get({ publicKey: options });
+                showProcessing('Verificando inicio de sesión...', 'Estamos validando tu identidad y tu dispositivo.');
+                const verifyResp = await fetch('/api/biometric/login/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username,
+                        credential: {
+                            id: assertion.id,
+                            rawId: bufferEncode(assertion.rawId),
+                            type: assertion.type,
+                            response: {
+                                clientDataJSON: bufferEncode(assertion.response.clientDataJSON),
+                                authenticatorData: bufferEncode(assertion.response.authenticatorData),
+                                signature: bufferEncode(assertion.response.signature),
+                                userHandle: assertion.response.userHandle ? bufferEncode(assertion.response.userHandle) : null
+                            }
+                        }
+                    })
+                });
+                const result = await verifyResp.json();
+                if (result.verified) {
+                    renderStatus(`Login biométrico exitoso. Abriendo chat seguro...`, 'success');
+                    if (!notifyParent(result, 'login', username)) {
+                        setTimeout(() => window.location.href = result.redirect || CONFIG.chatUrl, 1200);
+                    }
+                } else {
+                    renderStatus(result.error || 'No se pudo completar el login.', 'error');
+                }
+                refreshAudit();
+            } catch (err) {
+                console.error(err);
+                renderStatus('Error durante el login biométrico.', 'error');
+            } finally {
+                hideProcessing();
+            }
+        }
+
+        async function refreshAudit() {
+            try {
+                const resp = await fetch('/api/audit?limit=10');
+                const data = await resp.json();
+                const container = document.getElementById('audit-log');
+                container.innerHTML = '';
+                (data.events || []).forEach(evt => {
+                    const item = document.createElement('li');
+                    item.textContent = `[${new Date(evt.created_at * 1000).toLocaleTimeString()}] ${evt.event_type} · ${evt.ai_level || 'SIN-IA'}`;
+                    container.appendChild(item);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.addEventListener('beforeunload', closeApprovalStream);
+
+        document.getElementById('register-form').addEventListener('submit', requestRegistration);
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', beginLogin);
+        }
+
+        const loginInput = document.getElementById('login-username');
+        if (loginInput && AUTO_USERNAME) {
+            loginInput.value = AUTO_USERNAME;
+        }
+
+        // Mostrar solo login o solo registro según flags
+        const loginPanel = document.getElementById('login-panel');
+        const registerPanel = document.getElementById('register-panel');
+        if (LOGIN_ONLY && registerPanel) {
+            registerPanel.style.display = 'none';
+        }
+        if (REGISTER_ONLY && loginPanel) {
+            loginPanel.style.display = 'none';
+        }
+
+        // Si se pide solo login, evitamos que AUTO_FLOW dispare registro
+        if (LOGIN_ONLY && AUTO_FLOW === 'register') {
+            AUTO_FLOW = null;
+        }
+        // Si se pide solo registro, evitamos que AUTO_FLOW dispare login
+        if (REGISTER_ONLY && AUTO_FLOW === 'login') {
+            AUTO_FLOW = null;
+        }
+        refreshAudit();
+        if (AUTO_FLOW && AUTO_USERNAME) {
+            renderStatus(`Iniciando ${AUTO_FLOW} para ${AUTO_USERNAME}...`, 'info');
+            if (AUTO_FLOW === 'register' && !LOGIN_ONLY) {
+                requestRegistration(null, { username: AUTO_USERNAME, displayName: AUTO_DISPLAY, role: AUTO_ROLE });
+            } else if (AUTO_FLOW === 'login' && !REGISTER_ONLY) {
+                beginLogin(null, AUTO_USERNAME);
+            }
+        }
+    </script>
+</body>
+</html>

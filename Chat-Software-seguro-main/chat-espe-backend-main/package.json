@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "mongodb": "^7.0.0",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "baseline-browser-mapping": "^2.9.19"
+  }
+}
